@@ -92,6 +92,7 @@ Future:
 * Add arguments to main program (module argparse).
   * world to load (yaml file)
   * seed ('latest', number)
+  * Resume (resume from previous checkpoint)
 * PEP8 coding conventions:
   http://books.agiliq.com/projects/essential-python-tools/en/latest/linters.html
 * Review TODO's and implement or move to backlog.

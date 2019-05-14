@@ -35,6 +35,7 @@ NO_LEARNING = None
 # Minds: Auxiliary functions
 #
 # Used by Perception and Action functions.
+###############################################################################
 
 def obtain_bite(energy_map, position, radius=1, highest=False):
     # Return a delta from the given position leading to a position with
@@ -288,11 +289,11 @@ def passive(state=None):
 
 
 def wanderer(state):
-    # A hard-coded AI modelling these basic behaviours:
-    # - Some inertia for time-consistent movements or eating actions.
-    # - Capability to start moves on clear directions, though it can stumble on
-    #   other objects later (out of inertia).
-    # - Capability to eat from adjacent objects at times.
+    # A hard-coded AI modelling these basic behaviourial priorities:
+    # 1. Some inertia for continued movements or eating.
+    # 2. Start moves on clear directions (though inertia can cause collisions).
+    # 3. Eat from adjacent objects at times.
+    # 4. Otherwise, do nothing.
 
     agent, world = state  # Extract both complete objects from tuple.
 

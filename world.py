@@ -88,6 +88,9 @@ class World:
         # A grid tracking occupation [1 / 0] of each tile.
         self.occupation_bitmap = np.full(
             (self.width, self.height), UNOCCUPIED_TILE)
+        # A grid tracking aspect (a character) of Things on each tile (or "").
+        self.occupation_map = np.full(
+            (self.width, self.height), "")
 
         # Put TILES on the ground.
         self.ground = np.full((self.width, self.height), None)  # Fill in the basis of the world.
@@ -229,6 +232,9 @@ class World:
                 self.occupation_bitmap[
                     thing.position[0], thing.position[1]
                     ] = UNOCCUPIED_TILE
+                self.occupation_map[
+                    thing.position[0], thing.position[1]
+                    ] = ""
 
             self.things[position[0], position[1]] = thing
             if type(thing) is things.Agent:
@@ -236,6 +242,9 @@ class World:
             self.occupation_bitmap[
                 position[0], position[1]
                 ] = OCCUPIED_TILE
+            self.occupation_map[
+                position[0], position[1]
+                ] = thing.aspect
             thing.position = position
 
         return success
