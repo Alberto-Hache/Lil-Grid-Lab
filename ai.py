@@ -40,7 +40,7 @@ NO_LEARNING = None
 def obtain_bite(energy_map, position, radius=1, highest=False):
     # Return a delta from the given position leading to a position with
     # some energy within the radius given, or 'None' if none is found.
-    # If 'best' is True, the delta leading to the highest energy around is
+    # If 'highest' is True, the delta leading to the highest energy around is
     # returned.
 
     # Obtain submap around position ant tuple with its origin.
@@ -335,13 +335,13 @@ def wanderer(state):
 
 def wanderer2(state):
     # A hard-coded AI modelling these basic behaviourial priorities:
-    # 1. If just hurt (energy loss), escape from offending tile.
+    # 1. If loss just suffered is too high, escape from offending tile.
     # 2. If hungry, try  best bite (highest energy) around.
     # 3. Otherwise, act as a regular 'wanderer'.
 
     agent, world = state  # Extract both complete objects.
 
-    loss_threshold = agent.step_cost  # Arbitrary, relative to agent.
+    max_loss_threshold = agent.step_cost  # Arbitrary, relative to agent.
     hunger_threshold = 0.5  # Energy ratio below which eating is prioritary.
 
     # 0. Default action is to rest.
@@ -353,8 +353,8 @@ def wanderer2(state):
             agent.negative_touch_map.argmin(),
             agent.negative_touch_map.shape)
         loss_just_suffered = agent.negative_touch_map[max_loss_position]
-        if loss_just_suffered <= loss_threshold:  # (Negative amounts.)
-            # Pain detected: try to escape.
+        if loss_just_suffered <= max_loss_threshold:  # (Negative amounts.)
+            # High loss detected: try to escape.
             best_move_delta = obtain_best_escape(
                 world.occupation_bitmap,
                 agent.position,
@@ -366,7 +366,58 @@ def wanderer2(state):
     # 2. Check for hunger.
     if action == act.VOID_ACTION:
         if agent.energy / agent.max_energy < hunger_threshold:
-            # Hungry: try best bite.
+            # Hunger: try best bite.
+            best_move_delta = obtain_bite(
+                world.energy_map,
+                agent.position,
+                act.ACTIONS_DEF[act.EAT].radius,
+                highest=True)
+            if best_move_delta is not None:
+                action = [act.EAT, best_move_delta]
+
+    # 3. Act as a regular 'wanderer'.
+    if action == act.VOID_ACTION:
+        action = wanderer(state)
+
+    return action
+
+
+def killer(state):
+    # A hard-coded AI modelling these basic behaviourial priorities:
+    # 1. If loss just suffered is too high, escape from offending tile.
+    # 2. If mid-loss suffered, or a bit hungry, bite any agent around.
+    # 3. Otherwise, act as a regular 'wanderer'.
+
+    agent, world = state  # Extract both complete objects.
+
+    max_loss_threshold = -agent.bite_power  # Arbitrary, relative to agent.
+    normal_loss_threshold = agent.step_cost  # Arbitrary, relative to agent.
+    hunger_threshold = 0.9  # Energy ratio below which eating is prioritary.
+
+    # 0. Default action is to rest.
+    action = act.VOID_ACTION
+
+    # 1. Check for energy balance first.
+    if action == act.VOID_ACTION:
+        max_loss_position = unravel_index(
+            agent.negative_touch_map.argmin(),
+            agent.negative_touch_map.shape)
+        loss_just_suffered = agent.negative_touch_map[max_loss_position]
+        if loss_just_suffered <= max_loss_threshold:  # (Negative amounts.)
+            # High loss detected: try to escape.
+            best_move_delta = obtain_best_escape(
+                world.occupation_bitmap,
+                agent.position,
+                agent.negative_touch_map,
+                max_loss_position)
+            if best_move_delta is not None:
+                action = [act.MOVE, best_move_delta]
+
+    # 2. Check for energy around.
+    if action == act.VOID_ACTION:
+        if agent.energy / agent.max_energy < hunger_threshold or \
+           loss_just_suffered <= normal_loss_threshold:
+            # Hunger or low-loss attack: try best bite.
             best_move_delta = obtain_bite(
                 world.energy_map,
                 agent.position,

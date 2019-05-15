@@ -315,8 +315,12 @@ class UI:
                         # An AGENT:
                         if thing.current_energy_delta > 0:
                             # Highlight energy increase.
+                            if thing.color != RED:
+                                bg_color = thing.color
+                            else:
+                                bg_color = WHITE
                             pair = self.pair(thing.color + BRIGHT,
-                                             thing.color + NORMAL)
+                                             bg_color + NORMAL)
                         elif thing.current_energy_delta < thing.acceptable_energy_drop:
                             # Highlight huge energy drop.
                             pair = self.pair(ENERGY_DROP_COLOR + BRIGHT,

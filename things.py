@@ -123,7 +123,7 @@ AGENTS_DEF = (
     Agent_def(
         5,
         Thing_settings_def("Omi", "Ω", ui.CYAN, ui.BRIGHT, RANDOM_POSITION),
-        Energy_settings_def(100, 110, 5, -0.1, -0.5, RESPAWNABLE),
+        Energy_settings_def(100, 110, 5, -0.1, -0.1, RESPAWNABLE),
         AI_settings_def(ai.full_info, ai.wanderer2, ai.no_learning)
     ),
     Agent_def(
@@ -135,13 +135,13 @@ AGENTS_DEF = (
     Agent_def(
         2,
         Thing_settings_def("killer", "Ѫ", ui.RED, ui.BRIGHT, RANDOM_POSITION),
-        Energy_settings_def(100, 110, 25, -0.1, -0.1, NON_RECHARGEABLE),
-        AI_settings_def(ai.full_info, ai.wanderer, ai.no_learning)
+        Energy_settings_def(100, 110, 25, -0.1, -0.5, NON_RECHARGEABLE),
+        AI_settings_def(ai.full_info, ai.killer, ai.no_learning)
     ),
     Agent_def(
         5,
         Thing_settings_def("foe", "Д", ui.MAGENTA, ui.BRIGHT, RANDOM_POSITION),
-        Energy_settings_def(100, 110, 10, -0.1, -1, RESPAWNABLE),
+        Energy_settings_def(100, 110, 10, -0.1, -0.25, RESPAWNABLE),
         AI_settings_def(ai.full_info, ai.wanderer, ai.no_learning)
     ),
 

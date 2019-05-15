@@ -4,9 +4,7 @@
 
 1.0:
 
-* Create AI for 'hunter':
-  * Not to miss adjacent food... ever!
-  * Choose highest-energy adjacent target for food.
+* ...
 
 Future:
 
@@ -108,6 +106,10 @@ Future:
 
 AI:
 
+* Create AI for 'killer':
+    1. If loss just suffered is too high, escape from offending tile.
+    2. If mid-loss suffered, or a bit hungry, bite any agent around.
+    3. Otherwise, act as a regular 'wanderer'.
 * Implement new AI: 'wanderer2', refinement on 'wanderer':
   * Escape from attacks:
     * Prioritize moving over feeding/no-action.
