@@ -71,6 +71,7 @@ class World:
         self.initialize_fps(world_def["fps"])
         self.paused = world_def["initial_pause"]  # Whether the user has paused simulation.
         self.step_by_step = world_def["initial_pause"]  # Whether the user has activated step-by-step.
+        self.user_break = False  # Whether user has interrupted simulation.
         self.creation_time = time.time
 
         # Initialize world: randomness, steps and list of 'things' on it.
@@ -434,8 +435,11 @@ class World:
         return success, energy_delta
 
     def is_end_loop(self):
-        # Check if the world's loop has come to an end.
-        if self.max_steps is None:
+        # Check if the world's loop has come to an end
+        # or user has interrupted simulation.
+        if self.user_break:
+            end = True
+        elif self.max_steps is None:
             end = False
         else:
             end = self.steps >= self.max_steps
@@ -444,8 +448,10 @@ class World:
 
     def process_key_stroke(self, key):
         # Process user's keyboard input:
-        #   - Left / right key to control simulation speed.
+        #   - Left / right / up key to control simulation speed.
+        #   - Down key for a step-by-step simulation.
         #   - Space to pause simulation.
+        #   - Q/q to quit simulation
         #   - Tab to change tracked_agent.
 
         if key == -1:  # No key pressed.
@@ -462,9 +468,16 @@ class World:
         elif key in [ui.KEY_DOWN]:  # Go step-by-step.
             self.paused = False
             self.step_by_step = True
-        elif key == ord(' '):  # Pause the world.
-            self.paused = True
-            self.step_by_step = False
+        elif key == ord(' '):  # Pause/un-pause the world.
+            if self.paused or self.step_by_step:
+                self.paused = self.step_by_step = False
+            else:
+                self.paused = True
+                self.step_by_step = False
+        elif key in [ord('Q'), ord('q')]:
+            if self.paused or self.step_by_step:
+                self.user_break = True
+                self.paused = self.step_by_step = False
         elif key == ord('\t'):  # Track a different agent.
             initial_idx = idx = self.agents.index(self.tracked_agent)
             next_agent = None

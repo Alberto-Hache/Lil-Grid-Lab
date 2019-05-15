@@ -27,10 +27,10 @@ def main_loop(stdscr, world):
     end_loop = False
     while not end_loop:
         # Display the world as it is now.
-        user_break = u_i.draw()
+        u_i.draw()
 
         # Check conditions to go on.
-        end_loop = user_break or world.is_end_loop()
+        end_loop = world.is_end_loop()
         if not end_loop:
             # Evolve world by one time-fixed step.
             t_start = time.time()

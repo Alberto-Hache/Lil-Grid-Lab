@@ -265,7 +265,7 @@ class UI:
         self.footer.nodelay(True)  # Back to "nodelay" mode.
         return answer
 
-    def get_key_pressed(self, menu_text):
+    def get_key_if_pressed(self, menu_text):
         # Print menu_text on footer and capture a key IF pressed.
         pair = self.pair(self.header_fg, self.header_bg2)
 
@@ -472,27 +472,34 @@ class UI:
         # TRACKER: Update current state of the world.
         self.draw_tracker()
 
-        # FOOTER:
-        if self.world.paused:
-            # Ask user whether to go on.
-            answer = self.ask(" Press to continue... (Q to quit) ")
-            user_break = answer in ["Q", "q"]
-            self.world.paused = False
-        elif self.world.step_by_step:
-            # Check for next step or back to normal play.
-            key = self.ask_key(" Press to continue... (▼ for step) ")
-            self.world.process_key_stroke(key)
-            user_break = False
-        else:
-            # Update keyboard options at bottom. Get keyboard input.
-            key = self.get_key_pressed("Stop(SPC) Speed(◀ ▲ ▼ ▶) Select(TAB)")
-            self.world.process_key_stroke(key)
-            user_break = False
+        # FOOTER: capture user's input.
+        key = self.get_key_if_pressed("Stop(SPC) Speed(◀ ▲ ▼ ▶) Select(TAB)")
+        self.world.process_key_stroke(key)
 
-        # Refresh screen.
+        # Refresh screen and check requests before ending.
         curses.doupdate()
 
-        return user_break
+        if self.world.paused:
+            while self.world.paused:
+                # Capture and process user's keystrokes.
+                key = self.ask_key(" Press to continue... (Q to quit) ")
+                self.world.process_key_stroke(key)
+                # Draw and refresh screen
+                self.draw_board()
+                self.draw_tracker()
+                curses.doupdate()
+
+        elif self.world.step_by_step:
+            key = ''
+            while key not in [KEY_DOWN, ord(' ')]:
+                # Capture and process user's keystrokes.
+                key = self.ask_key(" Press to continue... (▼ for step) ")
+                self.world.process_key_stroke(key)
+                # Draw and refresh screen
+                self.draw_board()
+                self.draw_tracker()
+                curses.doupdate()
+                
 
 
 ###############################################################
