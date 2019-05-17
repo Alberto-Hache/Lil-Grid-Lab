@@ -1,6 +1,6 @@
 ###############################################################################
 # AI
-# Artificial Intelligence for "Lil' ASCII Lab"'s Agents...
+# Artificial Intelligence for "Lil' Grid Lab"'s Agents...
 ###############################################################################
 
 # Libraries.

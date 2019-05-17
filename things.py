@@ -1,5 +1,5 @@
 ###############################################################################
-# Classess of Thing in an LAL 'World':
+# Classess of Thing in a "Lil' Grid Lab" 'World':
 # Thing
 #   ├- Tile
 #   ├- Block
@@ -166,7 +166,7 @@ AGENTS_DEF = (
 )
 
 ###############################################################################
-# Classess of Thing in an LAL 'World':
+# Classess of Thing in a "Lil' Grid Lab" 'World':
 # Thing
 #   ├- Tile
 #   ├- Block

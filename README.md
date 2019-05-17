@@ -1,10 +1,10 @@
-# *"Lil' ASCII Lab"*
+# *"Lil' Grid Lab"*
 
 (v 0.1) by Alberto H
 
 ## About this project
 
-"Lil' ASCII Lab" is a simple playground on which single-character beings come to life driven by their AI.
+"Lil' Grid Lab" is a simple playground on which single-character beings come to life driven by their AI.
 Currently, agents running around will have simple, hard-coded behaviours. The long-term plan is to integrate Machine Learning-driven agents in.
 
 <img src="https://github.com/Alberto-Hache/Lil-ASCII-Lab/blob/master/screenshots/blocky-meadows.png" width="250">
@@ -71,7 +71,7 @@ This loops goes on till some final condition is reached or the maximal number of
 Example:
 
     World_def = {
-        "name":         "Lil' ASCII Lab",
+        "name":         "Lil' Grid Lab",
         "width":        12,         # x from 0 to width - 1
         "height":       8,          # y from 0 to height - 1
         "bg_color":     ui.GREEN,   # background color

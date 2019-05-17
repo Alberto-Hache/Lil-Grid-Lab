@@ -1,6 +1,6 @@
 ###############################################################
 # The world
-# for "Lil' ASCII Lab" and its entities...
+# for "Lil' Grid Lab" and its entities...
 
 ###############################################################
 
@@ -484,5 +484,5 @@ class World:
 # (code for TESTING purposes only.)
 
 if __name__ == '__main__':
-    print("world.py is a module of Lil' ASCII Lab and has no real main module.")
+    print("world.py is a module of Lil' Grid Lab and has no real main module.")
     _ = input("Press to exit...")

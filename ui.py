@@ -1,6 +1,6 @@
 ###############################################################
 # User Interface
-# for "Lil' ASCII Lab"
+# for "Lil' Grid Lab"
 
 ###############################################################
 
@@ -426,7 +426,7 @@ class UI:
         else:
             fps = "{:,.1f} fps ".format(self.world.fps)
         left_line = " Step {:,} ({}) {}".format(self.world.steps, time_run, fps)
-        right_line = " Lil' ASCII Lab 0.1 "
+        right_line = " Lil' Grid Lab 0.1 "
         self.tracker.addstr(self.tracker_height - 1, 1, left_line, fg_bright_color_pair | curses.A_REVERSE)
         self.tracker.addstr(self.tracker_height - 1, self.tracker_width - 1 - len(right_line), right_line,
                             fg_bright_color_pair)
@@ -539,6 +539,6 @@ def main(scr):
 
 if __name__ == '__main__':
     # Call as main module generates a series of tests on the terminal.
-    print("ui.py is a module of Lil' ASCII Lab.")
+    print("ui.py is a module of Lil' Grid Lab.")
     _ = input("Press to test some of 'ncurses' colors...")
     wrapper(main)

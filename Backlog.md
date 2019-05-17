@@ -94,7 +94,7 @@ Future:
 
 Future:
 
-* Extract strings with program name, version, etc ("Lil' ASCII Lab"...). from code.
+* Extract strings with program name, version, etc ("Lil' Grid Lab"...). from code.
 * Add logging (using standard 'logging' module).
 * Move all strings to ui.py or to yaml file(s), allowing L10N.
 

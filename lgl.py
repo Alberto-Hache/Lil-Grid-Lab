@@ -1,5 +1,5 @@
 ###############################################################
-# Lil' ASCII Lab
+# Lil' Grid Lab
 # Main world simulation loop.
 
 ###############################################################
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     wrapper(main_loop, world)
 
     # Quit program.
-    print("Lil' ASCII Lab v0.1")
+    print("Lil' Grid Lab v0.1")
     print("{:<20}{}".format("- Started:", time_0))
     print("{:<20}{}".format("- Ended:", time.ctime()))
     print("{:<20}{:,}".format("- Steps run:", world.steps))
