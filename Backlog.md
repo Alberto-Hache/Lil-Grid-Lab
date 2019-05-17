@@ -17,10 +17,11 @@ Future:
 
 1.0:
 
-* Visual limitation (full world, subsection around agent).
+* ...
 
 Future:
 
+* Visual limitation (full world, subsection around agent).
 * Messages from other agents.
 * Visual limitation: opacity of blocks.
 * Other senses: (environment conditions, e.g. smell, lightness, rain, temperature...).
@@ -33,7 +34,6 @@ Future:
 
 Future:
 
-* ui.draw(): allow UI action (select a new agent) on paused world by decoupling draw/step loops (draw would loop drawing the same frame till user moves on)!
 * Footer: Allow 2 lines when board is too narrow for text to fit.
 * Board: make "dead" respawnable agents BLINK.
 * Tracker (aesthetics): Review tracker's layout (split sub-areas?).
@@ -50,11 +50,7 @@ Future:
 
 1.0:
 
-* Handle/generalize bite effect when taken energy would exceed agent's max_energy:
-    a) agent absorbs limited amount, but prey gets full 'bite_power' reduction.
-    b) agent absorbs limited amount, and prey only loses such amount.
-* Improve respawn (e.g. generalize agent's __init__ to clone a given agent?).
-* execute_action(): check for impossible "EAT" actions (e.g. on a Block).
+* ...
 
 Future:
 
@@ -67,18 +63,19 @@ Future:
     b) Randomize: (probably the most fair and safe approach)
     c) Other?
 * Improve world generation with patterns of blocks.
-* Allow several 'respawn' options:
+* Allow several 'respawn' options for AIs:
   * Full start: all memories and learnings wiped out.
   * Keep learnings: memories wiped out BUT learnings (the trained model(s)) are kept.
   * Keep everything: memories are kept and so are learnings (it's basically a random jump).
   * All cases: energy is refilled and new agent moved to a random position.
-* Implement DELAYED recharge for agents?
+* Improve respawn (e.g. generalize agent's __init__ to clone a given agent?).
+* Implement DELAYED recharge for agents (similar to batteries)?
 * Maintain a count of number of instances per type of agent.
 * Implement new agent's feature:
   * agents that can be picked, carried and dropped (e.g. fruits).
   * Rest of agents (can't be picked).
 * Main loop: Decouple UI / AI refresh rates, e.g. one AI step every 5 UI steps.
-* Consider creating "hole" blocks, causing instant death.
+* Consider creating "pit" blocks, causing instant death.
 
 ## Overall features
 
@@ -130,6 +127,8 @@ AI:
 
 World dynamics:
 
+* execute_action(): check for impossible "EAT" actions (e.g. on a Block).
+* Bite effect doesn't exceed agent's max_energy (limiting damage on prey).
 * Implement new agent's energy dynamics:
   * a) fixed resources always at full energy ("stars").
   * b) mobile resources ("fruit") with limited energy.
@@ -141,6 +140,7 @@ World dynamics:
 
 UI:
 
+* ui.draw(): allow UI action (select a new agent) on paused world by decoupling draw/step loops (draw would loop drawing the same frame till user moves on)!
 * Improve highlight for tracked agent (blinking tiles around).
 * Add Tab control during step-by-step mode.
 * Add step-by-step control in "pause" menu to move fwd. 1 step.

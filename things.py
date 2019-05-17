@@ -115,15 +115,20 @@ BLOCKS_DEF = (
         Thing_settings_def("block", "▢", ui.BLUE, ui.BRIGHT, RANDOM_POSITION)
     ),
 )
-    #   (None, "full-block", " ", ui.BLACK, ui.BRIGHT, RANDOM_POSITION),
-    #   (10, "fence", "#", ui.WHITE, ui.BRIGHT, RANDOM_POSITION),
+
+"""
+Block_def(
+    100,
+    Thing_settings_def("full-block", " ", ui.BLUE, ui.NORMAL, RANDOM_POSITION)
+)
+"""
 
 AGENTS_DEF = (
     # With real minds:
     Agent_def(
         5,
         Thing_settings_def("Omi", "Ω", ui.CYAN, ui.BRIGHT, RANDOM_POSITION),
-        Energy_settings_def(100, 110, 5, -0.1, -0.1, RESPAWNABLE),
+        Energy_settings_def(100, 110, 5, -0.1, -0.1, NON_RECHARGEABLE),
         AI_settings_def(ai.full_info, ai.wanderer2, ai.no_learning)
     ),
     Agent_def(
@@ -141,7 +146,7 @@ AGENTS_DEF = (
     Agent_def(
         5,
         Thing_settings_def("foe", "Д", ui.MAGENTA, ui.BRIGHT, RANDOM_POSITION),
-        Energy_settings_def(100, 110, 10, -0.1, -0.25, RESPAWNABLE),
+        Energy_settings_def(100, 110, 10, -0.1, -0.25, NON_RECHARGEABLE),
         AI_settings_def(ai.full_info, ai.wanderer, ai.no_learning)
     ),
 

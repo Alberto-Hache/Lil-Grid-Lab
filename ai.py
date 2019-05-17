@@ -86,7 +86,7 @@ def obtain_move(occupation_bitmap, position, radius=1):
         radius)
 
     # Obtain relative position of all UNOCCUPIED positions in submap.
-    moves_list = np.argwhere(occupation_submap == 1)  # TODO: use UNOCCUPIED_TILE.
+    moves_list = np.argwhere(occupation_submap == 1)
 
     if len(moves_list > 0):
         # Some move(s) found: pick a random one.
@@ -268,16 +268,13 @@ def full_info(agent, world=None):
 # for the agent.
 #
 # - Input:
-#       - agent, the agent itself, for introspection of its state
-#       - world [used to query about empty tiles, etc.].
+#       - state, the current state of world and agent.
 #         TODO: Eliminate need for 'world' arg.
-#       - state, the current state of the agent.
 #
 # - Output: the action chosen, as a list:
 #       - action_type, e.g. act.MOVE, act.FEED, act.NONE.
 #       - action_arguments, e.g. [-1, 1], [].
-#       - action_energy_ratio, the cost invested in the action,
-#         as a multiplier of agent.move_cost, e.g. 1.0, 0.0, 4.0.
+#
 ###############################################################################
 
 def passive(state=None):

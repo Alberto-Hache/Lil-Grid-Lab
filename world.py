@@ -43,9 +43,6 @@ Simulation_def = dict(
 WORLD_DEFAULT_FPS = 5  # Fall-back world speed (in frames-per-second).
 WORLD_DEFAULT_SPF = 1 / WORLD_DEFAULT_FPS  # (the same in seconds-per-frame).
 
-OCCUPIED_TILE = 0  # Multiply to ZERO OUT values on maps.
-UNOCCUPIED_TILE = 1  # Multiply to KEEP values on maps.
-
 ###############################################################
 
 
@@ -88,7 +85,7 @@ class World:
         self.energy_map = np.zeros((self.width, self.height))
         # A grid tracking occupation [1 / 0] of each tile.
         self.occupation_bitmap = np.full(
-            (self.width, self.height), UNOCCUPIED_TILE)
+            (self.width, self.height), 1)  # Unoccupied tile.
         # A grid tracking aspect (a character) of Things on each tile (or "").
         self.occupation_map = np.full(
             (self.width, self.height), "")
@@ -100,6 +97,7 @@ class World:
                 # Create tile.
                 tile = things.Tile(tile_def)
                 self.ground[x, y] = tile
+                self.occupation_map[x, y] = tile.aspect
 
         # Put AGENTS in the world.
         self.agents = []  # List of all types of agent in the world.
@@ -232,17 +230,20 @@ class World:
                 self.energy_map[thing.position[0], thing.position[1]] = 0
                 self.occupation_bitmap[
                     thing.position[0], thing.position[1]
-                    ] = UNOCCUPIED_TILE
+                    ] = 1  # Unoccupied tile.
                 self.occupation_map[
                     thing.position[0], thing.position[1]
-                    ] = ""
+                    ] = \
+                    self.ground[
+                    thing.position[0], thing.position[1]  # Tile's aspect.
+                    ]
 
             self.things[position[0], position[1]] = thing
             if type(thing) is things.Agent:
                 self.energy_map[position[0], position[1]] = thing.energy
             self.occupation_bitmap[
                 position[0], position[1]
-                ] = OCCUPIED_TILE
+                ] = 0  # Occupied tile.
             self.occupation_map[
                 position[0], position[1]
                 ] = thing.aspect
@@ -250,31 +251,11 @@ class World:
 
         return success
 
-    def update_agent_energy(self, agent, energy_delta, energy_source_position=None):
-        # Execute agent's method to update its 'energy' state and then
-        # the world's internal status (self.energy_map).
-        energy_taken = agent.update_energy(
-            energy_delta,
-            energy_source_position)
-        self.energy_map[agent.position[0], agent.position[1]] = agent.energy
-
-        return energy_taken
-
     def tile_is_empty(self, position):
         # Check if a given position exists within world's limits and is free.
         x, y = position
         if (0 <= x <= self.width - 1) and (0 <= y <= self.height - 1):
             result = self.things[x, y] is None
-        else:
-            result = False
-        return result
-
-    def tile_with_agent(self, position):
-        # Check if a given position exists within world's limits and has an
-        # agent on it.
-        x, y = position
-        if (0 <= x <= self.width - 1) and (0 <= y <= self.height - 1):
-            result = isinstance(self.things[x, y], things.Agent)
         else:
             result = False
         return result
@@ -300,18 +281,6 @@ class World:
                 success = False
 
         return [x, y], success
-
-    def get_adjacent_empty_tiles(self, position):  # TODO: Allow x4 adjacence.
-        # Return a list with all adjacent empty tiles, respecting world's borders.
-        x0, y0 = position
-        tiles = []
-        for x_inc in (-1, 0, 1):
-            for y_inc in (-1, 0, 1):
-                if (x_inc, y_inc) != (0, 0):  # Skipping tile on which agent stands.
-                    if self.tile_is_empty([x0 + x_inc, y0 + y_inc]):
-                        tiles.append((x0 + x_inc, y0 + y_inc))
-
-        return tiles
 
     def step(self):
         # Prepare world's info for step.
@@ -403,18 +372,19 @@ class World:
 
         elif action_type == act.EAT:
             # Firstly, update energy spent in step for whichever result,
-            # (allowing full replenishment).
-            _ = self.update_agent_energy(agent, agent.step_cost) # Dropped energy is lost.
-            
+            # (to allow full replenishment).
+            _ = self.update_agent_energy(agent, agent.step_cost)  # Dropped energy is lost.
+
             prey = self.things[agent.position[0] + action_arguments[0],
                                agent.position[1] + action_arguments[1]]
-            if prey is not None:
-                # Take energy from prey (limited by prey's energy).
-                # TODO: Limit to 'Agent' class (avoiding biting a 'Block')
-                # TODO: max_possible_bite = min(agent.bite_power, agent.max_energy - agent.energy)
+            if prey in self.agents:
+                # Viable action. Try to take energy from prey.
+                max_possible_bite = min(
+                    agent.bite_power,
+                    agent.max_energy - agent.energy)
                 energy_taken = self.update_agent_energy(
                     prey,
-                    -agent.bite_power,
+                    -max_possible_bite,
                     agent.position)
                 action_delta += - energy_taken
                 success = action_delta > 0
@@ -424,6 +394,7 @@ class World:
                     action_delta,
                     prey.position)
             else:
+                # Failed action.
                 success = False
                 action_delta = 0
 
@@ -433,6 +404,16 @@ class World:
             raise Exception('Invalid action type passed: {}.'.format(action_type))
 
         return success, energy_delta
+
+    def update_agent_energy(self, agent, energy_delta, energy_source_position=None):
+        # Execute agent's method to update its 'energy' state and then
+        # the world's internal status (self.energy_map).
+        energy_taken = agent.update_energy(
+            energy_delta,
+            energy_source_position)
+        self.energy_map[agent.position[0], agent.position[1]] = agent.energy
+
+        return energy_taken
 
     def is_end_loop(self):
         # Check if the world's loop has come to an end

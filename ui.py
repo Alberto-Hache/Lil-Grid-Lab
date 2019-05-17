@@ -43,13 +43,14 @@ KEY_SRIGHT = curses.KEY_SRIGHT  # Shifted Right arrow
 # Other constants.
 LOW_ENERGY_THRESHOLD = 0.25  # Below this % energy is displayed as dangerously low.
 DEAD_AGENT_COLOR = (BLACK, BRIGHT)
+ENERGY_RISE_COLOR = GREEN
 ENERGY_DROP_COLOR = RED
 
 # Output settings: Define how I/O will happen:
 UI_def = dict(
     resize_term=True,  # Flag to allows resizing the actual terminal where program runs.
     spacing=1,  # Number of 'spc' chars to concatenate at the right of every tile (for an even vert/horiz aspect ratio).
-    extend_blocks=False,  # Whether blocks will be doubled to cover holes.
+    extend_blocks=True,  # Whether blocks will be doubled to cover holes. (TODO: remove and implement smart tiles render.)
     min_ui_width=20,  # Minimum width for the text interface, regardless of board size.
     min_ui_height=15,  # Minimum height for the text interface, regardeless of board size.
     max_size=100,  # Maximum size for width of height for the world (TODO=manage too big worlds).
@@ -81,7 +82,7 @@ class UI:
         # Check IO settings.
         self.resize_term = UI_def["resize_term"]
         self.spc_len = UI_def["spacing"]  # Multiplier for tiles spacing.
-        self.spc_str = " " * self.spc_len  # Doubling columns for aesthetic reasons.
+        self.spc_str = " " * self.spc_len  # Doubling board columns for aesthetic reasons.
         self.extend_blocks = UI_def["extend_blocks"]
         self.tracker_width = UI_def["tracking_width"]
         self.tracking_right_column = UI_def["tracking_right_column"]
@@ -104,7 +105,7 @@ class UI:
                                                                                           term_height, term_width))
 
         # Reshape aspect of world's blocks to fit UI settings.
-        self.reshape_blocks(self.world.blocks)
+        # self.reshape_blocks(self.world.blocks)  # TODO: remove code
 
         # Produce AUX strings.
         self.tracker_frame_1 = "┌" + "─" * (self.tracker_width - 2) + "┐"
@@ -148,7 +149,7 @@ class UI:
         self.footer.nodelay(True)  # Establish the "nodelay" mode.
         stdscr.refresh()
 
-    def reshape_blocks(self, world_blocks):
+    def reshape_blocks(self, world_blocks):  # TODO: remove function.
         # Reshape aspect of world's blocks to fit UI settings.
         if self.extend_blocks:
             reshape_factor = 1 + self.spc_len
@@ -229,8 +230,8 @@ class UI:
         self.footer.addnstr(0, 0, text.ljust(self.board_width - 1), self.footer.getmaxyx()[1] - 2, pair)
         self.footer.noutrefresh()
 
-    def ask(self, question):
-        # Ask user for TEXT input on footer zone.
+    def ask_for_key(self, question):
+        # Ask user for a one KEY input on footer zone.
         # But first, signal the simulation is paused.
         pair = self.pair(self.header_fg, self.header_bg3)
         self.draw_header2("PAUSED", pair)
@@ -239,25 +240,7 @@ class UI:
         self.footer.nodelay(False)  # So that getkey() waits for a key press.
         self.footer.erase()  # Erase footer window.
         pair = self.pair(self.footer_fg, self.footer_bg)
-        self.footer.addnstr(0, 0, question.ljust(self.board_width - 1),
-                            self.footer.getmaxyx()[1] - 2,
-                            pair | curses.A_BLINK)
-        self.footer.refresh()
-        answer = self.footer.getkey()
-        self.footer.nodelay(True)  # Back to "nodelay" mode.
-        return answer
-
-    def ask_key(self, question):
-        # Ask user for KEY input on footer zone.
-        # But first, signal the simulation is paused.
-        pair = self.pair(self.header_fg, self.header_bg3)
-        self.draw_header2("PAUSED", pair)
-
-        curses.flushinp()  # Throw away any typeahead not yet processed.
-        self.footer.nodelay(False)  # So that getkey() waits for a key press.
-        self.footer.erase()  # Erase footer window.
-        pair = self.pair(self.footer_fg, self.footer_bg)
-        self.footer.addnstr(0, 0, question.ljust(self.board_width - 1),
+        self.footer.addnstr(0, 0, question.center(self.board_width - 1),
                             self.footer.getmaxyx()[1] - 2,
                             pair | curses.A_BLINK)
         self.footer.refresh()
@@ -315,12 +298,8 @@ class UI:
                         # An AGENT:
                         if thing.current_energy_delta > 0:
                             # Highlight energy increase.
-                            if thing.color != RED:
-                                bg_color = thing.color
-                            else:
-                                bg_color = WHITE
-                            pair = self.pair(thing.color + BRIGHT,
-                                             bg_color + NORMAL)
+                            pair = self.pair(ENERGY_RISE_COLOR + BRIGHT,
+                                             ENERGY_RISE_COLOR + NORMAL)
                         elif thing.current_energy_delta < thing.acceptable_energy_drop:
                             # Highlight huge energy drop.
                             pair = self.pair(ENERGY_DROP_COLOR + BRIGHT,
@@ -482,7 +461,7 @@ class UI:
         if self.world.paused:
             while self.world.paused:
                 # Capture and process user's keystrokes.
-                key = self.ask_key(" Press to continue... (Q to quit) ")
+                key = self.ask_for_key(" Press to continue... (Q to quit) ")
                 self.world.process_key_stroke(key)
                 # Draw and refresh screen
                 self.draw_board()
@@ -493,13 +472,12 @@ class UI:
             key = ''
             while key not in [KEY_DOWN, ord(' ')]:
                 # Capture and process user's keystrokes.
-                key = self.ask_key(" Press to continue... (▼ for step) ")
+                key = self.ask_for_key(" Press to continue... (▼ for step) ")
                 self.world.process_key_stroke(key)
                 # Draw and refresh screen
                 self.draw_board()
                 self.draw_tracker()
-                curses.doupdate()
-                
+                curses.doupdate()  
 
 
 ###############################################################
