@@ -4,13 +4,11 @@
 
 1.0:
 
-* ...
+* ... ■
 
 Future:
 
-* Refine wanderer / hunter:
-  * Move towards highest-energy accessible (i.e. visible) targets.
-
+* Refine wanderer / hunter: Move towards highest-energy accessible (i.e. visible) targets.
 * Implement dynamics of inventory (grab, drop, max.weight...).
 
 ## AI - Perception
