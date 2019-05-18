@@ -17,7 +17,7 @@ Future:
 
 1.0:
 
-* ...
+* Generate all arrays required for perception (tensors, etc.).
 
 Future:
 
