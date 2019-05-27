@@ -18,14 +18,17 @@ import ui
 # World definition:
 # This is what the world simulated will look like:
 WORLD_DEF = dict(
+    # Aspect:
     name="Random Blox",  # Descriptive string.
-    width=30,  # Defining coordinate x from 0 to width - 1
+    width=70,  # Defining coordinate x from 0 to width - 1
     height=20,  # Defining coordinate y from 0 to height - 1
     bg_color=ui.BLACK,  # background color (see ui.py module).
     bg_intensity=ui.NORMAL,  # background intensity (see ui.py module).
     n_blocks_rnd=0.4,  # % of +/- randomness in number of blocks [0, 1]
+    # Simulation:
     max_steps=None,  # How long to run the world ('None' for infinite loop).
-    fps=5,  # Frames-Per-Second, i.e. number of time steps run per second.
+    pause_step=None,  # World will be paused at that step if not 'None'.
+    fps=5,  # Frames-Per-Second, i.e. number of time steps run per second ('None' for full-speed).
     initial_pause=True,  # Initiates world in 'pause' mode.
     random_seed=None,  # Seed for reproducible runs (None for random).
 )
@@ -63,6 +66,7 @@ class World:
         self.bg_intensity = world_def["bg_intensity"]
         self.n_blocks_rnd = world_def["n_blocks_rnd"]
         self.max_steps = world_def["max_steps"]
+        self.pause_step = world_def["pause_step"]
 
         # Time and speed settings.
         self.initialize_fps(world_def["fps"])
@@ -293,7 +297,7 @@ class World:
             # Request action from agent based on world state.
             action = agent.choose_action(world=self)
             # Try to execute action.
-            success, energy_delta = self.execute_action(agent, action)
+            success = self.execute_action(agent, action)
             # Update agent's internal information.
             agent.update_after_action(success)
 
@@ -332,9 +336,13 @@ class World:
         # Update rest of world's internal info.
         self.agents.sort(key=lambda x: x.energy, reverse=True)
         self.steps += 1
+        if self.steps == self.pause_step:
+            self.paused = True
+            self.step_by_step = False
 
     def execute_action(self, agent, action):
-        # Check if the action is feasible and execute it returning results.
+        # Check if the action is feasible and execute it on world and agents
+        # returning 'success' (boolean).
 
         # Initialize internal variables.
         action_type, action_arguments = action
@@ -403,7 +411,8 @@ class World:
         else:
             raise Exception('Invalid action type passed: {}.'.format(action_type))
 
-        return success, energy_delta
+        # Return result (energy_delta keeps change for agent, but isn't needed).
+        return success
 
     def update_agent_energy(self, agent, energy_delta, energy_source_position=None):
         # Execute agent's method to update its 'energy' state and then
@@ -431,7 +440,7 @@ class World:
         # Process user's keyboard input:
         #   - Left / right / up key to control simulation speed.
         #   - Down key for a step-by-step simulation.
-        #   - Space to pause simulation.
+        #   - Space to pause/un-pause world simulation.
         #   - Q/q to quit simulation
         #   - Tab to change tracked_agent.
 

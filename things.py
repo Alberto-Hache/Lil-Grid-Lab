@@ -127,9 +127,15 @@ AGENTS_DEF = (
     # With real minds:
     Agent_def(
         5,
-        Thing_settings_def("Omi", "Ω", ui.CYAN, ui.BRIGHT, RANDOM_POSITION),
+        Thing_settings_def("Omi-II", "Ω", ui.CYAN, ui.BRIGHT, RANDOM_POSITION),
         Energy_settings_def(100, 110, 5, -0.1, -0.1, NON_RECHARGEABLE),
         AI_settings_def(ai.full_info, ai.wanderer2, ai.no_learning)
+    ),
+    Agent_def(
+        5,
+        Thing_settings_def("Omi-I", "Ω", ui.CYAN, ui.NORMAL, RANDOM_POSITION),
+        Energy_settings_def(100, 110, 5, -0.1, -0.1, NON_RECHARGEABLE),
+        AI_settings_def(ai.full_info, ai.wanderer, ai.no_learning)
     ),
     Agent_def(
         15,
@@ -259,6 +265,7 @@ class Agent(Thing):
 
     def update_energy(self, energy_delta, delta_source_position=None):
         # Handle 'energy' updates, including 'recycling' cases.
+        #  - Updates energy change in self.current_energy_delta.
         # Updates 'touch_maps' at 'energy_source_position':
         #   - energy change passed is allocated to the source position passed.
         #   - when no source position is passed, local position is assumed,
@@ -308,6 +315,7 @@ class Agent(Thing):
         return self.chosen_action
 
     def update_after_action(self, success):
+        # TODO: handle 'success' in calling function 'step()'?
         # Update internal state of agent after trying some action.
 
         # Update internal variables, aspect, etc.

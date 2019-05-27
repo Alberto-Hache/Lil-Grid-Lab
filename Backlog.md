@@ -1,13 +1,36 @@
 # Backlog
 
+## Overall features
+
+1.0:
+
+* Provide placeholder ML templates for the basic AI methods.
+* Restrict maximum size of the world.
+* Extract all world & agents config. to external yaml files.
+* PEP8 coding conventions:
+  http://books.agiliq.com/projects/essential-python-tools/en/latest/linters.html
+* Review TODO's and implement or move to backlog.
+
+Future:
+
+* Extract strings with program name, version, etc ("Lil' Grid Lab"...). from code.
+* Add logging (using standard 'logging' module).
+* Move all strings to ui.py or to yaml file(s), allowing L10N.
+
 ## AI - Action
 
 1.0:
 
-* ... ■
+* ...
 
 Future:
 
+* Implement "grass" tiles which:
+  * Have some limited energy.
+  * Get empty when used up.
+  * Replenish over time.
+  * Reproduce in good conditions (e.g. after some number of steps in healthy
+    state)
 * Refine wanderer / hunter: Move towards highest-energy accessible (i.e. visible) targets.
 * Implement dynamics of inventory (grab, drop, max.weight...).
 
@@ -75,29 +98,19 @@ Future:
 * Main loop: Decouple UI / AI refresh rates, e.g. one AI step every 5 UI steps.
 * Consider creating "pit" blocks, causing instant death.
 
-## Overall features
-
-1.0:
-
-* Provide placeholder ML templates for the basic AI methods.
-* Restrict maximum size of the world.
-* Extract all world & agents config. to external yaml files.
-* Add arguments to main program (module argparse).
-  * world to load (yaml file)
-  * seed ('latest', number)
-  * Resume (resume from previous checkpoint)
-* PEP8 coding conventions:
-  http://books.agiliq.com/projects/essential-python-tools/en/latest/linters.html
-* Review TODO's and implement or move to backlog.
-
-Future:
-
-* Extract strings with program name, version, etc ("Lil' Grid Lab"...). from code.
-* Add logging (using standard 'logging' module).
-* Move all strings to ui.py or to yaml file(s), allowing L10N.
-
 
 # Available Features (add to README.md)
+
+Overall features:
+
+* Add arguments to main program (module argparse).
+  * world to load (yaml file)
+  * seed ('repeat', number)
+  * halt ('pause' simulation at some given step)
+* Reproducibility throudh random seed:
+  * Configuration parameter within world definition.
+  * Command line argument overriding world definition.
+
 
 AI:
 
@@ -133,7 +146,6 @@ World dynamics:
 * Implement dynamics of basic attributes: energy (initialization, consumption, death).
 * Define dynamics at death. Once energy is 0, AI is no longer active.
 * Implement synchronized steps, e.g. 12 fps, 24 fps.
-* Reproducibility: manage random seed at start (generate, store).
 * Allow Fast-Forward execution (off-clock).
 
 UI:

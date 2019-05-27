@@ -7,10 +7,97 @@
 # Libraries.
 from curses import wrapper
 import time
+import argparse
+import os
 
 # Modules.
 import world as w
 import ui
+
+
+def generate_simulation_definition(args):
+    # Capture settings for the simulation from:
+    # (1) Simulation definition (stored as a 'dict' in code for now).
+    # (2) Arguments passed to program, possibly overriding (1).
+
+    # (1) Capture definition set.
+    simulation_def = w.Simulation_def  # TODO: read from yaml file.
+
+    # (2) Process now arguments passed, overriding initial settings.
+
+    # Check for aux/ folder.
+    if not os.path.exists("aux"):
+        os.makedirs("aux")
+
+    # Arguments related to RANDOM SEED:
+    if args.repeat:
+        # Seed must be reused from previous simulation.
+        f = open("aux/seed.txt", "r")
+        seed = f.read()
+        f.close()
+        print("Initialization with PREVIOUS seed: {}".format(seed))
+    elif args.seed:
+        # A seed was passed.
+        seed = args.seed
+        # Store the seed passed.
+        f = open("aux/seed.txt", "w")
+        f.write(seed)
+        f.close()
+        print("Initialization with PASSED seed: {}".format(seed))
+    else:
+        # A new seed must be generated.
+        seed = time.time()
+        # Store the new seed.
+        f = open("aux/seed.txt", "w")
+        f.write(str(seed))
+        f.close()
+        print("Initialization with NEW seed: {}".format(seed))
+
+    # Set now the seed in simulation_def.
+    simulation_def["world"]["random_seed"] = seed
+
+    # Arguments related to PAUSE_STEP:
+    if args.pause:
+        simulation_def["world"]["pause_step"] = int(args.pause)
+
+    return simulation_def
+
+
+def process_args():
+    # Process arguments passed, returning usable class:
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group()
+    """
+    TODO: manage 'world' argument passed.
+    parser.add_argument(
+        "world",
+        help="file defining the world to load for simulation"
+    )
+    """
+    parser.add_argument(
+        "-p", "--pause",
+        help="pause simulation at the specified step"
+    )
+    group.add_argument(
+        "-r", "--repeat",
+        action="count",
+        help="repeat latest simulation (same random seed)"
+    )
+    group.add_argument(
+        "-s", "--seed",
+        help="random seed used in simulation (overrides config. file)"
+    )
+    # Return args:
+    arguments = parser.parse_args()
+    return arguments
+
+
+def produce_final_results(world):
+    print("Lil' Grid Lab v0.1")
+    print("{:<20}{}".format("- Started:", time_0))
+    print("{:<20}{}".format("- Ended:", time.ctime()))
+    print("{:<20}{:,}".format("- Steps run:", world.steps))
+    print("{:<20}{}".format("- Random seed used:", world.random_seed))
 
 
 def main_loop(stdscr, world):
@@ -47,13 +134,11 @@ if __name__ == '__main__':
     # Main program.
     time_0 = time.ctime()  # Start time.
 
-    # Create the world and start "wrapped" environment.
-    world = w.World(w.Simulation_def)
+    # Create the world and start "curses-wrapped" environment.
+    arguments = process_args()  # Capture arguments passed.
+    simulation_def = generate_simulation_definition(arguments)
+    world = w.World(simulation_def)
     wrapper(main_loop, world)
 
     # Quit program.
-    print("Lil' Grid Lab v0.1")
-    print("{:<20}{}".format("- Started:", time_0))
-    print("{:<20}{}".format("- Ended:", time.ctime()))
-    print("{:<20}{:,}".format("- Steps run:", world.steps))
-    print("{:<20}{}".format("- Random seed used:", world.random_seed))
+    produce_final_results(world)
