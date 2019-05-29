@@ -346,7 +346,8 @@ class Agent(Thing):
         self.steps += 1
 
     def respawn(self):
-        # Restablish an agent back to its optimal state.
+        # Restablish a fresh copy of the agent back to its optimal state.
+        # All previous state data is wiped out.
         self.energy = self.max_energy
         self.color = self.original_color
         self.intensity = self.original_intensity

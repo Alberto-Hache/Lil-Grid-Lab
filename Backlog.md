@@ -4,18 +4,24 @@
 
 1.0:
 
-* Provide placeholder ML templates for the basic AI methods.
+* Fix bug when respawning didn't find a free tile.
+* Add asserts for all place_at() results.
+* Add metric: fps reached at full-speed.
 * Restrict maximum size of the world.
+* Provide placeholder ML templates for the basic AI methods.
 * Extract all world & agents config. to external yaml files.
+* Basic profiling: obtain and analyze performance metrics on different conditions.
 * PEP8 coding conventions:
   http://books.agiliq.com/projects/essential-python-tools/en/latest/linters.html
 * Review TODO's and implement or move to backlog.
 
 Future:
 
+* Auto-pause the world when all agents are dead?
 * Extract strings with program name, version, etc ("Lil' Grid Lab"...). from code.
 * Add logging (using standard 'logging' module).
 * Move all strings to ui.py or to yaml file(s), allowing L10N.
+* Refactor environment for asynchronous threads/processes?
 
 ## AI - Action
 

@@ -20,7 +20,7 @@ import ui
 WORLD_DEF = dict(
     # Aspect:
     name="Random Blox",  # Descriptive string.
-    width=70,  # Defining coordinate x from 0 to width - 1
+    width=30,  # Defining coordinate x from 0 to width - 1
     height=20,  # Defining coordinate y from 0 to height - 1
     bg_color=ui.BLACK,  # background color (see ui.py module).
     bg_intensity=ui.NORMAL,  # background intensity (see ui.py module).
@@ -203,7 +203,7 @@ class World:
         return (self.steps * referential_spf) // 1
 
     def place_at(self, thing, position=things.RANDOM_POSITION, relocate=False):
-        # Put "things" in the world, updating the thing and
+        # Put "things" in the world at certain position, updating the thing and
         # the world's internal status (self.things and self.energy_map).
         #
         # If position is not defined, find a random free place and move the Thing there.
@@ -253,6 +253,12 @@ class World:
                 ] = thing.aspect
             thing.position = position
 
+        elif thing.position != things.RANDOM_POSITION and position == things.RANDOM_POSITION:
+            # The move is not possible, BUT the thing was already in the world,
+            # and target position didn't matter:
+            # Leave the thing where it was.
+            success = True
+
         return success
 
     def tile_is_empty(self, position):
@@ -284,7 +290,11 @@ class World:
             elif (x, y) == (x0, y0):  # Failed if loop over the world is complete.
                 success = False
 
-        return [x, y], success
+        if success:
+            position = [x, y]
+        else:
+            position = things.RANDOM_POSITION
+        return position, success
 
     def step(self):
         # Prepare world's info for step.
@@ -319,21 +329,28 @@ class World:
 
     def post_step(self):
         # Execute actions after a world's step (and before 'respawns').
-        self.total_energy = self.energy_map.sum()
-        assert np.isclose(self.total_energy, sum(a.energy for a in self.agents)), \
-            "Total energy mismatch ({}) between world.energy_map and agents.".format(self.total_energy - sum(a.energy for a in self.agents))
 
         # Call all agents' post_step() here.
         for agent in self.agents:
             if agent.energy <= 0 and agent.recycling == things.RESPAWNABLE:
                 # Respawn dead agent on new random place.
-                agent.respawn()
-                _ = self.place_at(agent)
+                self.respawn_agent(agent)
+                result = self.place_at(agent)
+                assert result, "Failed place_at({}) after respawn().".format(
+                    agent.name)
             else:
                 # Regular post_step()
                 agent.post_step()
 
         # Update rest of world's internal info.
+        self.total_energy = self.energy_map.sum()
+        assert np.isclose(  # Sanity check of energy totals.
+            self.total_energy,
+            sum(a.energy for a in self.agents)
+            ), "Total energy mismatch ({}) between world.energy_map and \
+                world.agents.".format(
+                self.total_energy - sum(a.energy for a in self.agents)
+                )
         self.agents.sort(key=lambda x: x.energy, reverse=True)
         self.steps += 1
         if self.steps == self.pause_step:
@@ -415,14 +432,22 @@ class World:
         return success
 
     def update_agent_energy(self, agent, energy_delta, energy_source_position=None):
-        # Execute agent's method to update its 'energy' state and then
-        # the world's internal status (self.energy_map).
+        # Execute agent's method to update its 'energy' state by 
+        # 'energy_delta';
+        # then update the world's internal status (self.energy_map).
+        # Return actual energy change for the agent.
         energy_taken = agent.update_energy(
             energy_delta,
             energy_source_position)
         self.energy_map[agent.position[0], agent.position[1]] = agent.energy
 
         return energy_taken
+
+    def respawn_agent(self, agent):
+        # Execute agent's method to respawn its state, energy, etc;
+        # then update the world's internal status (self.energy_map).
+        agent.respawn()
+        self.energy_map[agent.position[0], agent.position[1]] = agent.energy
 
     def is_end_loop(self):
         # Check if the world's loop has come to an end
