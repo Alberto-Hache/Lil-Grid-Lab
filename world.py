@@ -20,8 +20,8 @@ import ui
 WORLD_DEF = dict(
     # Aspect:
     name="Random Blox",  # Descriptive string.
-    width=30,  # Defining coordinate x from 0 to width - 1
-    height=20,  # Defining coordinate y from 0 to height - 1
+    width=10,  # Defining coordinate x from 0 to width - 1
+    height=10,  # Defining coordinate y from 0 to height - 1
     bg_color=ui.BLACK,  # background color (see ui.py module).
     bg_intensity=ui.NORMAL,  # background intensity (see ui.py module).
     n_blocks_rnd=0.4,  # % of +/- randomness in number of blocks [0, 1]
@@ -126,6 +126,10 @@ class World:
                     self.agents.append(agent)
                     if self.tracked_agent is None:
                         self.tracked_agent = agent
+                else:
+                    # Ignore agent and report incidence.
+                    # TODO: Track issue.
+                    pass
 
         # Put in some BLOCKS.
         self.blocks = []
@@ -141,8 +145,14 @@ class World:
             n = 0
             while n < n_random_blocks:
                 block = things.Block(b_def.thing_settings)
-                _ = self.place_at(block)  # Put in random position if possible (fail condition ignored).
-                self.blocks.append(block)
+                success = self.place_at(block)  # Put in random position if possible (fail condition ignored).
+                if success:
+                    # Update blocks list.
+                    self.blocks.append(block)
+                else:
+                    # Ignore block and report incidence.
+                    # TODO: Track issue.
+                    pass
                 n += 1
 
         # Final settings.

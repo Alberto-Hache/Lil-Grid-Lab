@@ -1,11 +1,13 @@
 # Backlog
 
+## Bugs
+
+* ...
+
 ## Overall features
 
 1.0:
 
-* Fix bug when respawning didn't find a free tile.
-* Add asserts for all place_at() results.
 * Add metric: fps reached at full-speed.
 * Restrict maximum size of the world.
 * Provide placeholder ML templates for the basic AI methods.
