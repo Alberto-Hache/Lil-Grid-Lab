@@ -32,29 +32,33 @@ def generate_simulation_definition(args):
     # Arguments related to RANDOM SEED:
     if args.repeat:
         # Seed must be reused from previous simulation.
-        f = open("aux/seed.txt", "r")
-        seed = f.read()
-        f.close()
-        print("Initialization with PREVIOUS seed: {}".format(seed))
+        with open("aux/seed.txt", "r") as f:
+            seed = float(f.read())
+        seed_source = "PREVIOUS"
     elif args.seed:
         # A seed was passed.
-        seed = args.seed
+        seed = float(args.seed)
+        seed_source = "PASSED"
         # Store the seed passed.
-        f = open("aux/seed.txt", "w")
-        f.write(seed)
-        f.close()
-        print("Initialization with PASSED seed: {}".format(seed))
+        with open("aux/seed.txt", "w") as f:
+            f.write(str(seed))
     else:
-        # A new seed must be generated.
-        seed = time.time()
+        # No seed specified: check if set in world settings or generate one.
+        seed = simulation_def["world"]["random_seed"]
+        seed_source = "WORLD DEF"
+        if seed is None:
+            # A new seed must be generated.
+            seed = time.time()
+            seed_source = "NEW"
+        else:
+            seed = float(seed)
         # Store the new seed.
-        f = open("aux/seed.txt", "w")
-        f.write(str(seed))
-        f.close()
-        print("Initialization with NEW seed: {}".format(seed))
+        with open("aux/seed.txt", "w") as f:
+            f.write(str(seed))
 
     # Set now the seed in simulation_def.
     simulation_def["world"]["random_seed"] = seed
+    print("Initialization with {} seed: {}".format(seed_source, seed))
 
     # Arguments related to PAUSE_STEP:
     if args.pause:

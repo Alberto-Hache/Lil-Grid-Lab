@@ -11,6 +11,8 @@ import curses
 import os
 import datetime
 from curses import wrapper
+import shutil
+import time
 
 # Modules
 pass
@@ -98,11 +100,13 @@ class UI:
 
         # Check if UI dimensions fit in terminal.
         self.safe_columns = 1  # Number of extra characters on the right.
-        term_size_ok, term_height, term_width = self.handle_terminal_size(self.stdscr)
+        term_size_ok, term_height, term_width = \
+            self.handle_terminal_size(self.stdscr)
         if not term_size_ok:
             raise Exception(
-                "World and tracker ({} x {}) don't fit in the terminal ({} x {}).".format(self.height, self.width,
-                                                                                          term_height, term_width))
+                "World and tracker ({} x {}) don't fit in the terminal \
+                ({} x {}).".format(self.height, self.width,
+                                   term_height, term_width))
 
         # Reshape aspect of world's blocks to fit UI settings.
         # self.reshape_blocks(self.world.blocks)  # TODO: remove code
@@ -207,7 +211,20 @@ class UI:
     def resize_terminal(self, rows, columns):
         # Xterm Control Sequences through “CSI” (“Control Sequence Introducer”).
         # Resize terminal.
-        os.system("printf '\e[8;{};{}t'".format(rows, columns))
+        os.system("printf '\e[8;{};{}t'".format(rows, columns))  # Resize text area to given height and width in characters.
+        time.sleep(0.1)
+        new_rows, new_columns = self.get_terminal_size()
+        """
+        assert (new_rows, new_columns) == (rows, columns), \
+            "Failed to resize terminal to {}x{}.".format(
+            rows, columns
+        )
+        """
+
+    def get_terminal_size(self):
+        # Obtain current terminal's dimensions.
+        columns, rows = shutil.get_terminal_size()
+        return rows, columns
 
     def draw_header(self):
         # Header: put world's name at top left.

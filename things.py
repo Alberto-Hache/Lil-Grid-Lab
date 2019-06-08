@@ -265,7 +265,7 @@ class Agent(Thing):
 
     def update_energy(self, energy_delta, delta_source_position=None):
         # Handle 'energy' updates, including 'recycling' cases.
-        #  - Updates energy change in self.current_energy_delta.
+        #   - Updates energy change in self.current_energy_delta.
         # Updates 'touch_maps' at 'energy_source_position':
         #   - energy change passed is allocated to the source position passed.
         #   - when no source position is passed, local position is assumed,
@@ -314,12 +314,10 @@ class Agent(Thing):
 
         return self.chosen_action
 
-    def update_after_action(self, success):
-        # TODO: handle 'success' in calling function 'step()'?
+    def update_after_action(self):
         # Update internal state of agent after trying some action.
 
         # Update internal variables, aspect, etc.
-        self.chosen_action_success = success
         self.reset_touch_maps()
 
         # UI: Capture action's icon, if any.
@@ -348,8 +346,17 @@ class Agent(Thing):
     def respawn(self):
         # Restablish a fresh copy of the agent back to its optimal state.
         # All previous state data is wiped out.
+
+        # Energy:
+        prev_energy = self.energy
         self.energy = self.max_energy
+        energy_used = self.energy - prev_energy  # Actual impact on agent.
+
+        # Look:
         self.color = self.original_color
         self.intensity = self.original_intensity
+
         # Initialize internal variables.
         self.initialize_state()
+
+        return energy_used

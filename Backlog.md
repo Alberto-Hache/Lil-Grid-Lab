@@ -2,16 +2,18 @@
 
 ## Bugs
 
-* ...
+* killer.1 looks grey but keeps moving! (step 13,313 ->    13,314)
+  python lgl.py -s 1559109855.098388 -p 13313
+* Resize check-up fails when running in VS Code!
+
 
 ## Overall features
 
 1.0:
 
-* Add metric: fps reached at full-speed.
-* Restrict maximum size of the world.
 * Provide placeholder ML templates for the basic AI methods.
 * Extract all world & agents config. to external yaml files.
+* Add metric: fps reached at full-speed.
 * Basic profiling: obtain and analyze performance metrics on different conditions.
 * PEP8 coding conventions:
   http://books.agiliq.com/projects/essential-python-tools/en/latest/linters.html
@@ -111,6 +113,7 @@ Future:
 
 Overall features:
 
+* Handle maximum size of the world with detailed error.
 * Add arguments to main program (module argparse).
   * world to load (yaml file)
   * seed ('repeat', number)

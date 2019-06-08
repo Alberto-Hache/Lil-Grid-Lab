@@ -20,7 +20,7 @@ import ui
 WORLD_DEF = dict(
     # Aspect:
     name="Random Blox",  # Descriptive string.
-    width=10,  # Defining coordinate x from 0 to width - 1
+    width=15,  # Defining coordinate x from 0 to width - 1
     height=10,  # Defining coordinate y from 0 to height - 1
     bg_color=ui.BLACK,  # background color (see ui.py module).
     bg_intensity=ui.NORMAL,  # background intensity (see ui.py module).
@@ -77,8 +77,12 @@ class World:
 
         # Initialize world: randomness, steps and list of 'things' on it.
         seed = world_def["random_seed"]
+        assert seed is not None, \
+            "World initialization received a random_seed of value 'None'"
+        """
         if seed is None:
             seed = time.time()
+        """
         self.random_seed = seed
         random.seed(seed)
 
@@ -314,12 +318,14 @@ class World:
         for agent in filter(lambda a:
                             a.energy > 0 and a.action is not None,
                             self.agents):
-            # Request action from agent based on world state.
-            action = agent.choose_action(world=self)
-            # Try to execute action.
-            success = self.execute_action(agent, action)
-            # Update agent's internal information.
-            agent.update_after_action(success)
+            # New check for a.energy (which can change within loop).
+            if agent.energy > 0:
+                # Request action from agent based on world state.
+                action = agent.choose_action(world=self)
+                # Try to execute action.
+                self.execute_action(agent, action)
+                # Update agent's internal information.
+                agent.update_after_action()
 
         # Update the world's info after step.
         self.post_step()
@@ -344,7 +350,7 @@ class World:
         for agent in self.agents:
             if agent.energy <= 0 and agent.recycling == things.RESPAWNABLE:
                 # Respawn dead agent on new random place.
-                self.respawn_agent(agent)
+                _ = self.update_agent_energy(agent, energy_delta=None)
                 result = self.place_at(agent)
                 assert result, "Failed place_at({}) after respawn().".format(
                     agent.name)
@@ -368,8 +374,10 @@ class World:
             self.step_by_step = False
 
     def execute_action(self, agent, action):
-        # Check if the action is feasible and execute it on world and agents
-        # returning 'success' (boolean).
+        # Check if the action is feasible and execute it on world and agents.
+        # Acting 'agent': it may update position, energy attributes,
+        # and chosen_action_success.
+        # [other agent involved: energy attributes].
 
         # Initialize internal variables.
         action_type, action_arguments = action
@@ -438,26 +446,27 @@ class World:
         else:
             raise Exception('Invalid action type passed: {}.'.format(action_type))
 
-        # Return result (energy_delta keeps change for agent, but isn't needed).
-        return success
+        # Update agent on success of action.
+        agent.chosen_action_success = success
 
-    def update_agent_energy(self, agent, energy_delta, energy_source_position=None):
-        # Execute agent's method to update its 'energy' state by 
-        # 'energy_delta';
-        # then update the world's internal status (self.energy_map).
+    def update_agent_energy(self, agent,
+                            energy_delta=None,
+                            energy_source_position=None):
+        # Execute agent's method to update its 'energy' state by
+        # 'energy_delta',
+        # or agent's respawn method if 'energy_delta' is None.
+        # Then update the world's internal status (self.energy_map).
         # Return actual energy change for the agent.
-        energy_taken = agent.update_energy(
-            energy_delta,
-            energy_source_position)
+
+        if energy_delta is not None:
+            energy_taken = agent.update_energy(
+                energy_delta,
+                energy_source_position)
+        else:
+            energy_taken = agent.respawn()
         self.energy_map[agent.position[0], agent.position[1]] = agent.energy
 
         return energy_taken
-
-    def respawn_agent(self, agent):
-        # Execute agent's method to respawn its state, energy, etc;
-        # then update the world's internal status (self.energy_map).
-        agent.respawn()
-        self.energy_map[agent.position[0], agent.position[1]] = agent.energy
 
     def is_end_loop(self):
         # Check if the world's loop has come to an end
