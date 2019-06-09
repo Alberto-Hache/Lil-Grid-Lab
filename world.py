@@ -79,10 +79,6 @@ class World:
         seed = world_def["random_seed"]
         assert seed is not None, \
             "World initialization received a random_seed of value 'None'"
-        """
-        if seed is None:
-            seed = time.time()
-        """
         self.random_seed = seed
         random.seed(seed)
 
@@ -319,13 +315,17 @@ class World:
                             a.energy > 0 and a.action is not None,
                             self.agents):
             # New check for a.energy (which can change within loop).
-            if agent.energy > 0:
-                # Request action from agent based on world state.
-                action = agent.choose_action(world=self)
-                # Try to execute action.
-                self.execute_action(agent, action)
-                # Update agent's internal information.
-                agent.update_after_action()
+            assert agent.energy > 0, \
+                "Agent {} with energy {} was active in step() loop.".format(
+                    agent.name,
+                    agent.energy
+                )
+            # Request action from agent based on world state.
+            action = agent.choose_action(world=self)
+            # Try to execute action.
+            self.execute_action(agent, action)
+            # Update agent's internal information.
+            agent.update_after_action()
 
         # Update the world's info after step.
         self.post_step()
@@ -384,12 +384,12 @@ class World:
         action_energy_ratio = act.ACTIONS_DEF[action_type].energy_ratio
 
         # Calculate energy cost IF action is actually made.
-        action_delta = agent.move_cost * action_energy_ratio
+        action_delta = agent.move_cost * action_energy_ratio  # <0
         # Manage abandoned_position, for cases when the agent moves.
         abandoned_position = None
 
-        if action_delta > agent.energy:
-            # Not enough energy for the move.
+        if agent.energy + action_delta + agent.step_cost < 0:
+            # Not enough energy for the move and the step cost.
             success = False
             action_delta = 0
             energy_delta = action_delta + agent.step_cost

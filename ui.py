@@ -44,7 +44,7 @@ KEY_SRIGHT = curses.KEY_SRIGHT  # Shifted Right arrow
 
 # Other constants.
 LOW_ENERGY_THRESHOLD = 0.25  # Below this % energy is displayed as dangerously low.
-DEAD_AGENT_COLOR = (BLACK, BRIGHT)
+DEAD_AGENT_COLOR_INTENSITY = (BLACK, BRIGHT)
 ENERGY_RISE_COLOR = GREEN
 ENERGY_DROP_COLOR = RED
 

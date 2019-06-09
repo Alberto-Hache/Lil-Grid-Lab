@@ -302,7 +302,7 @@ class Agent(Thing):
             # Check for death condition:
             if self.energy <= 0:
                 # Update aspect (RESPAWNEABLE condition handled by world).
-                self.color, self.intensity = ui.DEAD_AGENT_COLOR
+                self.color, self.intensity = ui.DEAD_AGENT_COLOR_INTENSITY
 
         return energy_used
 

@@ -2,9 +2,8 @@
 
 ## Bugs
 
-* killer.1 looks grey but keeps moving! (step 13,313 ->    13,314)
-  python lgl.py -s 1559109855.098388 -p 13313
 * Resize check-up fails when running in VS Code!
+* Rename world.steps as world.current_step for clarity.
 
 
 ## Overall features
