@@ -20,8 +20,8 @@ import ui
 WORLD_DEF = dict(
     # Aspect:
     name="Random Blox",  # Descriptive string.
-    width=15,  # Defining coordinate x from 0 to width - 1
-    height=10,  # Defining coordinate y from 0 to height - 1
+    width=20,  # Defining coordinate x from 0 to width - 1
+    height=15,  # Defining coordinate y from 0 to height - 1
     bg_color=ui.BLACK,  # background color (see ui.py module).
     bg_intensity=ui.NORMAL,  # background intensity (see ui.py module).
     n_blocks_rnd=0.4,  # % of +/- randomness in number of blocks [0, 1]
@@ -82,7 +82,7 @@ class World:
         self.random_seed = seed
         random.seed(seed)
 
-        self.steps = 0
+        self.current_step = 0
         # A grid for agents and blocks [references].
         self.things = np.full((self.width, self.height), None)
         # A grid tracking energy [floats] on each tile.
@@ -210,7 +210,7 @@ class World:
         else:
             referential_spf = WORLD_DEFAULT_SPF
 
-        return (self.steps * referential_spf) // 1
+        return (self.current_step * referential_spf) // 1
 
     def place_at(self, thing, position=things.RANDOM_POSITION, relocate=False):
         # Put "things" in the world at certain position, updating the thing and
@@ -314,11 +314,10 @@ class World:
         for agent in filter(lambda a:
                             a.energy > 0 and a.action is not None,
                             self.agents):
-            # New check for a.energy (which can change within loop).
+            # Sanity check for a.energy (which can change within loop).
             assert agent.energy > 0, \
                 "Agent {} with energy {} was active in step() loop.".format(
-                    agent.name,
-                    agent.energy
+                    agent.name, agent.energy
                 )
             # Request action from agent based on world state.
             action = agent.choose_action(world=self)
@@ -368,8 +367,8 @@ class World:
                 self.total_energy - sum(a.energy for a in self.agents)
                 )
         self.agents.sort(key=lambda x: x.energy, reverse=True)
-        self.steps += 1
-        if self.steps == self.pause_step:
+        self.current_step += 1
+        if self.current_step == self.pause_step:
             self.paused = True
             self.step_by_step = False
 
@@ -444,7 +443,11 @@ class World:
             energy_delta = action_delta + agent.step_cost
 
         else:
-            raise Exception('Invalid action type passed: {}.'.format(action_type))
+            raise Exception(
+                'Invalid action type passed [{}] by agent {}.'.format(
+                    action_type, agent.name
+                    )
+                )
 
         # Update agent on success of action.
         agent.chosen_action_success = success
@@ -476,7 +479,7 @@ class World:
         elif self.max_steps is None:
             end = False
         else:
-            end = self.steps >= self.max_steps
+            end = self.current_step >= self.max_steps
 
         return end
 

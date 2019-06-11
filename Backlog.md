@@ -2,9 +2,7 @@
 
 ## Bugs
 
-* Resize check-up fails when running in VS Code!
-* Rename world.steps as world.current_step for clarity.
-
+* ...
 
 ## Overall features
 
@@ -12,7 +10,10 @@
 
 * Provide placeholder ML templates for the basic AI methods.
 * Extract all world & agents config. to external yaml files.
-* Add metric: fps reached at full-speed.
+* Add basic metrics:
+  * fps reached at full-speed.
+  * Agents' performance (by type, top- / bottom- performers)
+  * ...
 * Basic profiling: obtain and analyze performance metrics on different conditions.
 * PEP8 coding conventions:
   http://books.agiliq.com/projects/essential-python-tools/en/latest/linters.html

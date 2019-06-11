@@ -18,7 +18,7 @@ import ui
 def generate_simulation_definition(args):
     # Capture settings for the simulation from:
     # (1) Simulation definition (stored as a 'dict' in code for now).
-    # (2) Arguments passed to program, possibly overriding (1).
+    # (2) Arguments passed to program, overriding (1).
 
     # (1) Capture definition set.
     simulation_def = w.Simulation_def  # TODO: read from yaml file.
@@ -100,7 +100,7 @@ def produce_final_results(world):
     print("Lil' Grid Lab v0.1")
     print("{:<20}{}".format("- Started:", time_0))
     print("{:<20}{}".format("- Ended:", time.ctime()))
-    print("{:<20}{:,}".format("- Steps run:", world.steps))
+    print("{:<20}{:,}".format("- Steps run:", world.current_step))
     print("{:<20}{}".format("- Random seed used:", world.random_seed))
 
 

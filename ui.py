@@ -214,12 +214,11 @@ class UI:
         os.system("printf '\e[8;{};{}t'".format(rows, columns))  # Resize text area to given height and width in characters.
         time.sleep(0.1)
         new_rows, new_columns = self.get_terminal_size()
-        """
-        assert (new_rows, new_columns) == (rows, columns), \
-            "Failed to resize terminal to {}x{}.".format(
-            rows, columns
-        )
-        """
+
+        assert new_rows >= rows and new_columns >= columns, \
+            "Failed to resize terminal to {}x{} (or squeeze it in current {}x{}).".format(
+                rows, columns, new_rows, new_columns
+                )
 
     def get_terminal_size(self):
         # Obtain current terminal's dimensions.
@@ -442,7 +441,7 @@ class UI:
             fps = "full-speed "
         else:
             fps = "{:,.1f} fps ".format(self.world.fps)
-        left_line = " Step {:,} ({}) {}".format(self.world.steps, time_run, fps)
+        left_line = " Step {:,} ({}) {}".format(self.world.current_step, time_run, fps)
         right_line = " Lil' Grid Lab 0.1 "
         self.tracker.addstr(self.tracker_height - 1, 1, left_line, fg_bright_color_pair | curses.A_REVERSE)
         self.tracker.addstr(self.tracker_height - 1, self.tracker_width - 1 - len(right_line), right_line,
