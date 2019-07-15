@@ -35,7 +35,14 @@ RANDOM_POSITION = (None, None)
 # TILE:
 # Settings defining a 'Tile':
 
-pass  # Currently Tiles are defined through common "Thing_settings_def".
+Tile_def = namedtuple("Tile_def", [
+    'thing_settings',  # Generic settings common to all Things (Tile, Block, Agent).
+    'tile_settings'  # Tile-related settings.
+])
+
+Tile_settings_def = namedtuple("Tile_settings_def", [
+    'energy_delta'  # Effect the tile has on an agent standing on it.    
+])
 
 ###############################################################################
 # BLOCK:
@@ -96,11 +103,11 @@ AI_settings_def = namedtuple("AI_settings_def", [
 
 # Tiles definition:
 # name, aspect, color, intensity, initial_position.
-TILE_DEF = (
+TILES_DEF = (
     Thing_settings_def("ground", "·", ui.BLUE, ui.NORMAL, RANDOM_POSITION)
 )
 
-# Block definition:
+# Blocks definition:
 #   Number of instances (or None for RND, based on world's width and % of randomness).
 #   Type, i.e. its name.
 #   Aspect: " " for a generic full block (which will be doubled to fit world's spacing).

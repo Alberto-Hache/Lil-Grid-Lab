@@ -5,6 +5,7 @@
 ###############################################################
 
 # Libraries.
+import yaml
 from curses import wrapper
 import time
 import argparse

@@ -16,7 +16,7 @@ import ui
 
 
 # World definition:
-# This is what the world simulated will look like:
+# This is what the simulated world will look like:
 WORLD_DEF = dict(
     # Aspect:
     name="Random Blox",  # Descriptive string.
@@ -24,22 +24,23 @@ WORLD_DEF = dict(
     height=15,  # Defining coordinate y from 0 to height - 1
     bg_color=ui.BLACK,  # background color (see ui.py module).
     bg_intensity=ui.NORMAL,  # background intensity (see ui.py module).
-    n_blocks_rnd=0.4,  # % of +/- randomness in number of blocks [0, 1]
-    # Simulation:
-    max_steps=None,  # How long to run the world ('None' for infinite loop).
-    pause_step=None,  # World will be paused at that step if not 'None'.
-    fps=5,  # Frames-Per-Second, i.e. number of time steps run per second ('None' for full-speed).
-    initial_pause=True,  # Initiates world in 'pause' mode.
+    # Execution:
     random_seed=None,  # Seed for reproducible runs (None for random).
+    initial_pause=True,  # Initiates world in 'pause' mode.
+    pause_step=None,  # World will be paused at that step if not 'None'.
+    exit_step=None,  # How long to run the world ('None' for infinite loop).
+    fps=5,  # Frames-Per-Second, i.e. number of time steps run per second ('None' for full-speed).
+    # Layout:
+    n_blocks_rnd=0.4,  # % of +/- randomness in number of blocks [0, 1]
 )
 
 # Simulation definition:
 # These are the settings provided to the simulation:
 Simulation_def = dict(
     world=WORLD_DEF,  # Some specific world definition.
-    tile=things.TILE_DEF,  # The tiles it will contain.
-    blocks=things.BLOCKS_DEF,  # The blocks to put in it.
-    agents=things.AGENTS_DEF,  # The agents who will live in it.
+    tiles=things.TILES_DEF,  # Defining the tiles it will contain.
+    blocks=things.BLOCKS_DEF,  # Defining the blocks to put in it.
+    agents=things.AGENTS_DEF,  # Defining the agents who will live in it.
 )
 
 # Constants:
@@ -54,7 +55,7 @@ class World:
     def __init__(self, Simulation_def):
         # Create a world from the definitions given.
         world_def = Simulation_def["world"]
-        tile_def = Simulation_def["tile"]
+        tiles_def = Simulation_def["tiles"]
         blocks_def = Simulation_def["blocks"]
         agents_def = Simulation_def["agents"]
 
@@ -65,7 +66,7 @@ class World:
         self.bg_color = world_def["bg_color"]
         self.bg_intensity = world_def["bg_intensity"]
         self.n_blocks_rnd = world_def["n_blocks_rnd"]
-        self.max_steps = world_def["max_steps"]
+        self.exit_step = world_def["exit_step"]
         self.pause_step = world_def["pause_step"]
 
         # Time and speed settings.
@@ -99,7 +100,7 @@ class World:
         for x in range(self.width):
             for y in range(self.height):
                 # Create tile.
-                tile = things.Tile(tile_def)
+                tile = things.Tile(tiles_def)
                 self.ground[x, y] = tile
                 self.occupation_map[x, y] = tile.aspect
 
@@ -476,10 +477,10 @@ class World:
         # or user has interrupted simulation.
         if self.user_break:
             end = True
-        elif self.max_steps is None:
+        elif self.exit_step is None:
             end = False
         else:
-            end = self.current_step >= self.max_steps
+            end = self.current_step >= self.exit_step
 
         return end
 

@@ -1,0 +1,185 @@
+###############################################################
+# Simulation definition:
+# These are the settings provided to the simulation:
+# - world definition
+# - tiles definition
+# - blocks definition
+# - agents definition
+
+# WORLD definition:
+# This is what the simulated world will look like:
+world_def:
+  # Aspect:
+  name: "Random Blox"  # Descriptive string.
+  width: 20  # Defining coordinate x from 0 to width - 1
+  height: 15  # Defining coordinate y from 0 to height - 1
+  bg_color: BLACK  # background color (see ui.py module).
+  bg_intensity: NORMAL  # background intensity (see ui.py module).
+  # Execution:
+  random_seed: null  # Seed for reproducible runs (None for random).
+  initial_pause: true  # Initiates world in 'pause' mode.
+  pause_step: null  # World will be paused at that step if not 'None'.
+  exit_step: null  # How long to run the world ('None' for infinite loop).
+  fps: 5  # Frames-Per-Second, i.e. number of time steps run per second ('None' for full-speed).
+  # Layout:
+  n_blocks_rnd: 0.4  # % of +/- randomness in number of blocks [0, 1]
+
+# TILES definition:
+# This is what tiles will look like:
+tiles_def:
+  name: "ground"
+  aspect: "·"
+  color: BLUE
+  intensity: NORMAL
+  initial_position: RANDOM_POSITION # Change to null?
+
+# BLOCKS definition:
+# This is what blocks will look like:
+blocks_def:
+  instances: 100
+  name: "block"
+  aspect: "▢"
+  color: BLUE
+  intensity: BRIGHT
+  initial_position: RANDOM_POSITION # Change to null?
+
+# AGENTS definition:
+# This is the initial population of the world:
+agents_def:
+
+  # With real minds:
+  - # Omi-II
+    instances: 5
+    thing_settings:
+      name: "Omi-II"
+      aspect: "Ω"
+      color: CYAN
+      intensity: BRIGHT
+      initial_position: RANDOM_POSITION # Change to null?
+    energy_settings:
+      initial_energy: 100
+      maximum_energy: 110
+      bite_power: 5
+      step_cost: -0.1
+      move_cost: -0.1
+      recycling_type: NON_RECHARGEABLE
+    ai_settings:
+      perception: full_info
+      action: wanderer2
+      learning: no_learning # Change to null?
+  - # Omi-I
+    instances: 5
+    thing_settings:
+      name: "Omi-I"
+      aspect: "Ω"
+      color: CYAN
+      intensity: NORMAL
+      initial_position: RANDOM_POSITION # Change to null?
+    energy_settings:
+      initial_energy: 100
+      maximum_energy: 110
+      bite_power: 5
+      step_cost: -0.1
+      move_cost: -0.1
+      recycling_type: NON_RECHARGEABLE
+    ai_settings:
+      perception: full_info
+      action: wanderer
+      learning: no_learning # Change to null?
+  - # Bug
+    instances: 15
+    thing_settings:
+      name: "bug"
+      aspect: "⚉"
+      color: GREEN
+      intensity: BRIGHT
+      initial_position: RANDOM_POSITION # Change to null?
+    energy_settings:
+      initial_energy: 100
+      maximum_energy: 110
+      bite_power: 5
+      step_cost: -0.1
+      move_cost: -0.1
+      recycling_type: NON_RECHARGEABLE
+    ai_settings:
+      perception: full_info
+      action: wanderer
+      learning: no_learning # Change to null?
+  - # Killer
+    instances: 2
+    thing_settings:
+      name: "killer"
+      aspect: "Ѫ"
+      color: RED
+      intensity: BRIGHT
+      initial_position: RANDOM_POSITION # Change to null?
+    energy_settings:
+      initial_energy: 100
+      maximum_energy: 110
+      bite_power: 25
+      step_cost: -0.1
+      move_cost: -0.5
+      recycling_type: NON_RECHARGEABLE
+    ai_settings:
+      perception: full_info
+      action: killer
+      learning: no_learning # Change to null?
+  - # Foe
+    instances: 5
+    thing_settings:
+      name: "foe"
+      aspect: "Д"
+      color: MAGENTA
+      intensity: BRIGHT
+      initial_position: RANDOM_POSITION # Change to null?
+    energy_settings:
+      initial_energy: 100
+      maximum_energy: 110
+      bite_power: 10
+      step_cost: -0.1
+      move_cost: -0.25
+      recycling_type: NON_RECHARGEABLE
+    ai_settings:
+      perception: full_info
+      action: wanderer
+      learning: no_learning # Change to null?
+  
+  # Mindless:
+  - # Energy
+    instances: 15
+    thing_settings:
+      name: "energy"
+      aspect: "♥"
+      color: RED
+      intensity: NORMAL
+      initial_position: RANDOM_POSITION # Change to null?
+    energy_settings:
+      initial_energy: 50
+      maximum_energy: 50
+      bite_power: 0
+      step_cost: -0.001
+      move_cost: 0
+      recycling_type: RESPAWNABLE
+    ai_settings:
+      perception: null
+      action: null
+      learning: null
+  - # Recharger
+    instances: 1
+    thing_settings:
+      name: "recharger"
+      aspect: "*"
+      color: YELLOW
+      intensity: BRIGHT
+      initial_position: RANDOM_POSITION # Change to null?
+    energy_settings:
+      initial_energy: 30
+      maximum_energy: 30
+      bite_power: 0
+      step_cost: 0
+      move_cost: 0
+      recycling_type: EVERLASTING
+    ai_settings:
+      perception: null
+      action: null
+      learning: null

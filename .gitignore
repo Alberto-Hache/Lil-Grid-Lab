@@ -1,5 +1,6 @@
-# Program's aux files
+# Program's local or auxiliary files
 aux/
+tests/
 
 # Visual Studio Code
 .vscode

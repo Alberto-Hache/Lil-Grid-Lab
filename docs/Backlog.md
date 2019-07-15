@@ -4,12 +4,17 @@
 
 * ...
 
+## NFR
+
+* Review code to include clip() function (not min(), max()...).
+
 ## Overall features
 
 1.0:
 
+* Add setting for auto-pause when no more agents are alive.
 * Provide placeholder ML templates for the basic AI methods.
-* Extract all world & agents config. to external yaml files.
+* Extract all world & agents config. to external yaml files (see https://pyyaml.org/wiki/PyYAMLDocumentation).
 * Add basic metrics:
   * fps reached at full-speed.
   * Agents' performance (by type, top- / bottom- performers)
@@ -18,13 +23,13 @@
 * PEP8 coding conventions:
   http://books.agiliq.com/projects/essential-python-tools/en/latest/linters.html
 * Review TODO's and implement or move to backlog.
-
+* Structure files and docs in repo (see: https://docs.python-guide.org/writing/structure/)
 Future:
 
 * Auto-pause the world when all agents are dead?
 * Extract strings with program name, version, etc ("Lil' Grid Lab"...). from code.
 * Add logging (using standard 'logging' module).
-* Move all strings to ui.py or to yaml file(s), allowing L10N.
+* L10N: Move all strings to ui.py or to yaml file(s).
 * Refactor environment for asynchronous threads/processes?
 
 ## AI - Action
@@ -149,6 +154,7 @@ AI:
 
 World dynamics:
 
+* Allow "buying" action's priority by investing larger energy amounts? (faster = more expensive)
 * execute_action(): check for impossible "EAT" actions (e.g. on a Block).
 * Bite effect doesn't exceed agent's max_energy (limiting damage on prey).
 * Implement new agent's energy dynamics:
