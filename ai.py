@@ -26,16 +26,12 @@ DISTANCE_MAP_2_TILES = np.array([
 ])
 DISTANCE_MAP_2_TILES_CENTER = [2, 2]
 
-NO_PERCEPTION = None
-NO_ACTION = None
-NO_LEARNING = None
-
-
 ###############################################################################
 # Minds: Auxiliary functions
 #
 # Used by Perception and Action functions.
 ###############################################################################
+
 
 def obtain_bite(energy_map, position, radius=1, highest=False):
     # Return a delta from the given position leading to a position with

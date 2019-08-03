@@ -6,9 +6,19 @@
 # - blocks definition
 # - agents definition
 
+# CONSTANTS you can use as values in this file:
+#
+# Colors:
+#   BLACK, BLUE, CYAN, GREEN, MAGENTA, RED, WHITE, YELLOW
+#   will be replaced with their curses' indices.
+# Intensity:
+#   NORMAL, BRIGHT
+#   will be replaced with their curses' indices.
+#
+
 # WORLD definition:
 # This is what the simulated world will look like:
-world_def:
+world:
   # Aspect:
   name: "Random Blox"  # Descriptive string.
   width: 20  # Defining coordinate x from 0 to width - 1
@@ -26,55 +36,59 @@ world_def:
 
 # TILES definition:
 # This is what tiles will look like:
-tiles_def:
+tiles:
   name: "ground"
   aspect: "·"
   color: BLUE
   intensity: NORMAL
-  initial_position: RANDOM_POSITION # Change to null?
+  initial_position: null  # Its initial position (or RND). If 'n_instances' > 1, it will be used for the first one only.
+  energy_effect: null  # Effect the tile has on an agent standing on it.
 
 # BLOCKS definition:
 # This is what blocks will look like:
-blocks_def:
-  instances: 100
-  name: "block"
-  aspect: "▢"
-  color: BLUE
-  intensity: BRIGHT
-  initial_position: RANDOM_POSITION # Change to null?
+blocks:
+
+  - # Simple block
+    n_instances: 100
+    thing_settings:
+      name: "block"
+      aspect: "▢"
+      color: BLUE
+      intensity: BRIGHT
+      initial_position: null
 
 # AGENTS definition:
 # This is the initial population of the world:
-agents_def:
+agents:
 
   # With real minds:
   - # Omi-II
-    instances: 5
+    n_instances: 5
     thing_settings:
       name: "Omi-II"
       aspect: "Ω"
       color: CYAN
       intensity: BRIGHT
-      initial_position: RANDOM_POSITION # Change to null?
+      initial_position: null
     energy_settings:
-      initial_energy: 100
-      maximum_energy: 110
-      bite_power: 5
-      step_cost: -0.1
-      move_cost: -0.1
-      recycling_type: NON_RECHARGEABLE
+      initial_energy: 100  # Initial energy assigned at start [>= 0].
+      maximum_energy: 110  # Maximum energy the agent can acquire [> 0].
+      bite_power: 5  # Amount of energy the agent can take with one bite [>= 0].
+      step_cost: -0.1  # Energy consumed on each world step regardless of action chosen [<= 0].
+      move_cost: -0.1  # Energy consumed for moving to an adjacent tile [<= 0].
+      recycling_type: NON_RECHARGEABLE # Dynamics ruling its energy losses and 'death' [NON_RECHARGEABLE, RECHARGEABLE, EVERLASTING, RESPAWNABLE].
     ai_settings:
-      perception: full_info
-      action: wanderer2
-      learning: no_learning # Change to null?
+      perception: full_info  # World -> AI input.
+      action: wanderer2  # AI input -> Action.
+      learning: no_learning  # Action, Reward -> New AI.
   - # Omi-I
-    instances: 5
+    n_instances: 5
     thing_settings:
       name: "Omi-I"
       aspect: "Ω"
       color: CYAN
       intensity: NORMAL
-      initial_position: RANDOM_POSITION # Change to null?
+      initial_position: null
     energy_settings:
       initial_energy: 100
       maximum_energy: 110
@@ -87,13 +101,13 @@ agents_def:
       action: wanderer
       learning: no_learning # Change to null?
   - # Bug
-    instances: 15
+    n_instances: 15
     thing_settings:
       name: "bug"
       aspect: "⚉"
       color: GREEN
       intensity: BRIGHT
-      initial_position: RANDOM_POSITION # Change to null?
+      initial_position: null
     energy_settings:
       initial_energy: 100
       maximum_energy: 110
@@ -106,13 +120,13 @@ agents_def:
       action: wanderer
       learning: no_learning # Change to null?
   - # Killer
-    instances: 2
+    n_instances: 2
     thing_settings:
       name: "killer"
       aspect: "Ѫ"
       color: RED
       intensity: BRIGHT
-      initial_position: RANDOM_POSITION # Change to null?
+      initial_position: null
     energy_settings:
       initial_energy: 100
       maximum_energy: 110
@@ -125,13 +139,13 @@ agents_def:
       action: killer
       learning: no_learning # Change to null?
   - # Foe
-    instances: 5
+    n_instances: 5
     thing_settings:
       name: "foe"
       aspect: "Д"
       color: MAGENTA
       intensity: BRIGHT
-      initial_position: RANDOM_POSITION # Change to null?
+      initial_position: null
     energy_settings:
       initial_energy: 100
       maximum_energy: 110
@@ -146,13 +160,13 @@ agents_def:
   
   # Mindless:
   - # Energy
-    instances: 15
+    n_instances: 15
     thing_settings:
       name: "energy"
       aspect: "♥"
       color: RED
       intensity: NORMAL
-      initial_position: RANDOM_POSITION # Change to null?
+      initial_position: null
     energy_settings:
       initial_energy: 50
       maximum_energy: 50
@@ -165,13 +179,13 @@ agents_def:
       action: null
       learning: null
   - # Recharger
-    instances: 1
+    n_instances: 1
     thing_settings:
       name: "recharger"
       aspect: "*"
       color: YELLOW
       intensity: BRIGHT
-      initial_position: RANDOM_POSITION # Change to null?
+      initial_position: null
     energy_settings:
       initial_energy: 30
       maximum_energy: 30

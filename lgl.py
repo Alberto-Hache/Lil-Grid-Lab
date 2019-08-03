@@ -16,13 +16,109 @@ import world as w
 import ui
 
 
+def read_simulation_definition():
+    # Generate sim. definition from a certain .yaml file,
+    # TODO: Add input argument specifying some world.
+    # If none is given, use default world as per XXX config file.
+
+    # Build path to config. file to use.
+    path = './simulations/default/'
+    world = 'world1'
+    route = "{}{}.yaml".format(path, world)
+    assert os.path.exists(route), \
+        "File {} not found.".format(route)
+
+    # Read .yaml config file.
+    with open(route, 'r') as stream:
+        try:
+            simulation_def = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    # Convert non-standard tags.
+    convert_non_standard_yaml_tags(simulation_def)
+    return simulation_def
+
+
+def convert_non_standard_yaml_tags(sim_def):
+    # This function transform the following string references to 
+    # their corresponding values:
+    # color, intensity
+
+    # WORLD
+    # color and intensity: values found in ui.py module.
+    sim_def["world"]["bg_color"] = ui.color_name_to_color[
+        sim_def["world"]["bg_color"]
+    ]
+    sim_def["world"]["bg_intensity"] = ui.intensity_name_to_intensity[
+        sim_def["world"]["bg_intensity"]
+    ]
+
+    # TILES
+    # color and intensity: values found in ui.py module.
+    sim_def["tiles"]["color"] = ui.color_name_to_color[
+        sim_def["tiles"]["color"]
+    ]
+    sim_def["tiles"]["intensity"] = ui.intensity_name_to_intensity[
+        sim_def["tiles"]["intensity"]
+    ]
+
+    # BLOCKS
+    for block in sim_def["blocks"]:
+        # color and intensity: values found in ui.py module.
+        block["thing_settings"]["color"] = ui.color_name_to_color[
+            block["thing_settings"]["color"]
+        ]
+        block["thing_settings"]["intensity"] = ui.intensity_name_to_intensity[
+            block["thing_settings"]["intensity"]
+        ]
+
+    # AGENTS
+    for agent in sim_def["agents"]:
+        # color and intensity: values found in ui.py module.
+        agent["thing_settings"]["color"] = ui.color_name_to_color[
+            agent["thing_settings"]["color"]
+        ]
+        agent["thing_settings"]["intensity"] = ui.intensity_name_to_intensity[
+            agent["thing_settings"]["intensity"]
+        ]
+        # ai settings: functions found in ai.py module.
+        if agent["ai_settings"]["perception"] is not None:
+            doc_aux = """
+            perception: !!python/name:ai.{}
+            """.format(
+                agent["ai_settings"]["perception"]
+            )
+            agent["ai_settings"]["perception"] = yaml.load(
+                doc_aux, Loader=yaml.Loader
+            )["perception"]
+        if agent["ai_settings"]["action"] is not None:
+            doc_aux = """
+            action: !!python/name:ai.{}
+            """.format(
+                agent["ai_settings"]["action"]
+            )
+            agent["ai_settings"]["action"] = yaml.load(
+                doc_aux, Loader=yaml.Loader
+            )["action"]
+        if agent["ai_settings"]["learning"] is not None:
+            doc_aux = """
+            learning: !!python/name:ai.{}
+            """.format(
+                agent["ai_settings"]["learning"]
+            )
+            agent["ai_settings"]["learning"] = yaml.load(
+                doc_aux, Loader=yaml.Loader
+            )["learning"]
+
+
 def generate_simulation_definition(args):
     # Capture settings for the simulation from:
     # (1) Simulation definition (stored as a 'dict' in code for now).
     # (2) Arguments passed to program, overriding (1).
 
     # (1) Capture definition set.
-    simulation_def = w.Simulation_def  # TODO: read from yaml file.
+    simulation_def = read_simulation_definition()
 
     # (2) Process now arguments passed, overriding initial settings.
 
@@ -75,7 +171,7 @@ def process_args():
     """
     TODO: manage 'world' argument passed.
     parser.add_argument(
-        "world",
+        "-w", "--world",
         help="file defining the world to load for simulation"
     )
     """

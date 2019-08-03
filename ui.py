@@ -27,12 +27,24 @@ RED = curses.COLOR_RED
 WHITE = curses.COLOR_WHITE
 YELLOW = curses.COLOR_YELLOW
 
-colors = (BLACK, BLUE, CYAN, GREEN, MAGENTA, RED, WHITE, YELLOW)
-color_names = ("BLACK", "BLUE", "CYAN", "GREEN", "MAGENTA", "RED", "WHITE", "YELLOW")
+colors = (
+    BLACK, BLUE, CYAN, GREEN, MAGENTA, RED, WHITE, YELLOW
+    )
+color_names = (
+    "BLACK", "BLUE", "CYAN", "GREEN", "MAGENTA", "RED", "WHITE", "YELLOW"
+    )
+color_name_to_color = {}
+for n, c in zip(color_names, colors):
+    color_name_to_color[n] = c
 
 NORMAL = 0  # No offset for normal colors (1..8).
 BRIGHT = 8  # Offset to get brighter colors, assuming COLORS >= 16 .
 MAX_COLORS = 16  # The number of predefined colors to try to use.
+
+intensity_name_to_intensity = {
+    "NORMAL": NORMAL,
+    "BRIGHT": BRIGHT
+}
 
 # Constants based on curses to manage keycaps:
 KEY_DOWN = curses.KEY_DOWN  # Down-arrow

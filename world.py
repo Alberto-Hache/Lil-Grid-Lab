@@ -15,34 +15,6 @@ import act
 import ui
 
 
-# World definition:
-# This is what the simulated world will look like:
-WORLD_DEF = dict(
-    # Aspect:
-    name="Random Blox",  # Descriptive string.
-    width=20,  # Defining coordinate x from 0 to width - 1
-    height=15,  # Defining coordinate y from 0 to height - 1
-    bg_color=ui.BLACK,  # background color (see ui.py module).
-    bg_intensity=ui.NORMAL,  # background intensity (see ui.py module).
-    # Execution:
-    random_seed=None,  # Seed for reproducible runs (None for random).
-    initial_pause=True,  # Initiates world in 'pause' mode.
-    pause_step=None,  # World will be paused at that step if not 'None'.
-    exit_step=None,  # How long to run the world ('None' for infinite loop).
-    fps=5,  # Frames-Per-Second, i.e. number of time steps run per second ('None' for full-speed).
-    # Layout:
-    n_blocks_rnd=0.4,  # % of +/- randomness in number of blocks [0, 1]
-)
-
-# Simulation definition:
-# These are the settings provided to the simulation:
-Simulation_def = dict(
-    world=WORLD_DEF,  # Some specific world definition.
-    tiles=things.TILES_DEF,  # Defining the tiles it will contain.
-    blocks=things.BLOCKS_DEF,  # Defining the blocks to put in it.
-    agents=things.AGENTS_DEF,  # Defining the agents who will live in it.
-)
-
 # Constants:
 WORLD_DEFAULT_FPS = 5  # Fall-back world speed (in frames-per-second).
 WORLD_DEFAULT_SPF = 1 / WORLD_DEFAULT_FPS  # (the same in seconds-per-frame).
@@ -59,23 +31,14 @@ class World:
         blocks_def = Simulation_def["blocks"]
         agents_def = Simulation_def["agents"]
 
-        # Assign values from w_def.
+        # Aspect:
         self.name = world_def["name"]
         self.width = world_def["width"]
         self.height = world_def["height"]
         self.bg_color = world_def["bg_color"]
         self.bg_intensity = world_def["bg_intensity"]
-        self.n_blocks_rnd = world_def["n_blocks_rnd"]
-        self.exit_step = world_def["exit_step"]
-        self.pause_step = world_def["pause_step"]
 
-        # Time and speed settings.
-        self.initialize_fps(world_def["fps"])
-        self.paused = world_def["initial_pause"]  # Whether the user has paused simulation.
-        self.step_by_step = world_def["initial_pause"]  # Whether the user has activated step-by-step.
-        self.user_break = False  # Whether user has interrupted simulation.
-        self.creation_time = time.time
-
+        # Execution:
         # Initialize world: randomness, steps and list of 'things' on it.
         seed = world_def["random_seed"]
         assert seed is not None, \
@@ -83,7 +46,20 @@ class World:
         self.random_seed = seed
         random.seed(seed)
 
+        self.paused = world_def["initial_pause"]  # Whether the user has paused simulation.
+        self.pause_step = world_def["pause_step"]
+        self.exit_step = world_def["exit_step"]
+
+        # Time and speed settings.
+        self.initialize_fps(world_def["fps"])
+        self.step_by_step = world_def["initial_pause"]  # Whether the user has activated step-by-step.
+        self.user_break = False  # Whether user has interrupted simulation.
+        self.creation_time = time.time
         self.current_step = 0
+
+        # Layout:
+        self.n_blocks_rnd = world_def["n_blocks_rnd"]
+
         # A grid for agents and blocks [references].
         self.things = np.full((self.width, self.height), None)
         # A grid tracking energy [floats] on each tile.
@@ -108,16 +84,16 @@ class World:
         self.agents = []  # List of all types of agent in the world.
         self.tracked_agent = None  # The agent to track during simulation.
         for a_def in agents_def:  # Loop over the types of agent defined.
-            for i in range(a_def.n_instances):  # Create the number of instances specified.
+            for i in range(a_def["n_instances"]):  # Create the number of instances specified.
                 # Create agent as defined, defining now its suffix.
-                if a_def.n_instances == 1:  # Check if it's a single instance.
+                if a_def["n_instances"] == 1:  # Check if it's a single instance.
                     agent_suffix = None
                 else:
                     agent_suffix = i
                 agent = things.Agent(
-                    a_def.thing_settings,
-                    a_def.energy_settings,
-                    a_def.ai_settings,
+                    a_def["thing_settings"],
+                    a_def["energy_settings"],
+                    a_def["ai_settings"],
                     agent_suffix
                     )
                 # Put agent in the world on requested position, relocating on colisions (on failure, Agent is ignored).
@@ -135,17 +111,17 @@ class World:
         # Put in some BLOCKS.
         self.blocks = []
         for b_def in blocks_def:  # List of all types of block in the world.
-            if (b_def.n_instances is None):
+            if (b_def["n_instances"] is None):
                 # Unspecified number of blocks; base on width.
                 n_random_blocks = (self.width * self.n_blocks_rnd) // 1  # abs. max variation.
                 n_random_blocks = self.width + random.randint(-n_random_blocks, n_random_blocks)
             else:
                 # Specified No. of blocks.
-                n_random_blocks = b_def.n_instances
+                n_random_blocks = b_def["n_instances"]
 
             n = 0
             while n < n_random_blocks:
-                block = things.Block(b_def.thing_settings)
+                block = things.Block(b_def["thing_settings"])
                 success = self.place_at(block)  # Put in random position if possible (fail condition ignored).
                 if success:
                     # Update blocks list.
