@@ -197,7 +197,9 @@ def produce_final_results(world):
     print("Lil' Grid Lab v0.1")
     print("{:<20}{}".format("- Started:", time_0))
     print("{:<20}{}".format("- Ended:", time.ctime()))
-    print("{:<20}{:,}".format("- Steps run:", world.current_step))
+    print("{:<20}{:,} [{}]".format(
+        "- Steps run:", world.current_step, world.end_reason
+        ))
     print("{:<20}{}".format("- Random seed used:", world.random_seed))
 
 

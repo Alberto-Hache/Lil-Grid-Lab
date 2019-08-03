@@ -12,9 +12,7 @@
 
 1.0:
 
-* Add setting for auto-pause when no more agents are alive.
 * Provide placeholder ML templates for the basic AI methods.
-* Extract all world & agents config. to external yaml files (see https://pyyaml.org/wiki/PyYAMLDocumentation).
 * Add basic metrics:
   * fps reached at full-speed.
   * Agents' performance (by type, top- / bottom- performers)
@@ -114,10 +112,14 @@ Future:
 * Consider creating "pit" blocks, causing instant death.
 
 
+#######################################
 # Available Features (add to README.md)
+#######################################
 
 Overall features:
 
+* Add setting for auto-exit when no more agents are alive.
+* Extract all world & agents config. to external yaml files.
 * Handle maximum size of the world with detailed error.
 * Add arguments to main program (module argparse).
   * world to load (yaml file)

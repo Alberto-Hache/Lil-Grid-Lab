@@ -48,7 +48,11 @@ class World:
 
         self.paused = world_def["initial_pause"]  # Whether the user has paused simulation.
         self.pause_step = world_def["pause_step"]
+        self.exit_if_empty = world_def["exit_if_empty"]
+        if self.exit_if_empty is None:
+            self.exit_if_empty = False
         self.exit_step = world_def["exit_step"]
+        self.end_reason = ""  # Will store the reason why simulatio is ended.
 
         # Time and speed settings.
         self.initialize_fps(world_def["fps"])
@@ -82,6 +86,7 @@ class World:
 
         # Put AGENTS in the world.
         self.agents = []  # List of all types of agent in the world.
+        self.n_active_agents = 0  # The number of agents with some energy and able to interact.
         self.tracked_agent = None  # The agent to track during simulation.
         for a_def in agents_def:  # Loop over the types of agent defined.
             for i in range(a_def["n_instances"]):  # Create the number of instances specified.
@@ -101,6 +106,8 @@ class World:
                 if success:
                     # Update agents list and tracked_agent (only the first time).
                     self.agents.append(agent)
+                    if agent.is_alive():
+                        self.n_active_agents += 1
                     if self.tracked_agent is None:
                         self.tracked_agent = agent
                 else:
@@ -284,12 +291,15 @@ class World:
         return position, success
 
     def step(self):
+        # The key 'tic' of the simulation, sequentially executing a step for 
+        # each agent.
+
         # Prepare world's info for step.
         self.pre_step()
 
         # Run step over all "living and acting" agents.
         for agent in filter(lambda a:
-                            a.energy > 0 and a.action is not None,
+                            a.is_alive(),
                             self.agents):
             # Sanity check for a.energy (which can change within loop).
             assert agent.energy > 0, \
@@ -320,9 +330,11 @@ class World:
         pass
 
     def post_step(self):
-        # Execute actions after a world's step (and before 'respawns').
+        # Execute world actions after a world's step (and before 'respawns').
+        # Return the number of active agents left (energy > 0)
 
         # Call all agents' post_step() here.
+        n_active_agents = 0
         for agent in self.agents:
             if agent.energy <= 0 and agent.recycling == things.RESPAWNABLE:
                 # Respawn dead agent on new random place.
@@ -333,6 +345,8 @@ class World:
             else:
                 # Regular post_step()
                 agent.post_step()
+            if agent.is_alive():
+                n_active_agents += 1
 
         # Update rest of world's internal info.
         self.total_energy = self.energy_map.sum()
@@ -348,6 +362,8 @@ class World:
         if self.current_step == self.pause_step:
             self.paused = True
             self.step_by_step = False
+
+        self.n_active_agents = n_active_agents  # Update count of active agents.
 
     def execute_action(self, agent, action):
         # Check if the action is feasible and execute it on world and agents.
@@ -451,13 +467,22 @@ class World:
     def is_end_loop(self):
         # Check if the world's loop has come to an end
         # or user has interrupted simulation.
+        # Return result and explanation.
+        end_reason = ""
         if self.user_break:
             end = True
+            end_reason = "USER BREAK"
+        elif self.exit_if_empty and self.n_active_agents == 0:
+            end = True
+            end_reason = "EMPTY WORLD"
         elif self.exit_step is None:
             end = False
         else:
             end = self.current_step >= self.exit_step
+            if end:
+                end_reason = "EXIT STEP REACHED"
 
+        self.end_reason = end_reason
         return end
 
     def process_key_stroke(self, key):

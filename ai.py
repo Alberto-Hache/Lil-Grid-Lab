@@ -231,8 +231,8 @@ def overlap_maps(big_map, big_map_center, small_map, small_map_center):
 #
 # - Output:
 #       - state,  information in the shape the agent will be able to process.
-#         NOTE: This implies that "perception"'s output state must match
-#         "action"'s input state.
+#         NOTE: This implies that "perception"'s *arbitrary* output state MUST
+#         match "action"'s input state.
 ###############################################################################
 
 

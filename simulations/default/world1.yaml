@@ -21,15 +21,16 @@
 world:
   # Aspect:
   name: "Random Blox"  # Descriptive string.
-  width: 20  # Defining coordinate x from 0 to width - 1
-  height: 15  # Defining coordinate y from 0 to height - 1
-  bg_color: BLACK  # background color (see ui.py module).
-  bg_intensity: NORMAL  # background intensity (see ui.py module).
+  width: 20  # [number] Defining coordinate x from 0 to width - 1
+  height: 15  # [number] Defining coordinate y from 0 to height - 1
+  bg_color: BLACK  # Background color (BLACK, BLUE, CYAN, GREEN, MAGENTA, RED, WHITE, YELLOW).
+  bg_intensity: NORMAL  # Applied to bg color (NORMAL, BRIGHT).
   # Execution:
-  random_seed: null  # Seed for reproducible runs (None for random).
-  initial_pause: true  # Initiates world in 'pause' mode.
-  pause_step: null  # World will be paused at that step if not 'None'.
-  exit_step: null  # How long to run the world ('None' for infinite loop).
+  random_seed: null  # [number] Seed for reproducible runs (null for random).
+  initial_pause: true  # [bool] Initiate world in 'pause' mode.
+  pause_step: null  # [number] Pause at this step if not 'null'.
+  exit_step: null  # [number] Exit world at this step ('null' for infinite loop).
+  exit_if_empty: True # [bool] World will be exited if no more active agents.
   fps: 5  # Frames-Per-Second, i.e. number of time steps run per second ('None' for full-speed).
   # Layout:
   n_blocks_rnd: 0.4  # % of +/- randomness in number of blocks [0, 1]
@@ -37,19 +38,20 @@ world:
 # TILES definition:
 # This is what tiles will look like:
 tiles:
-  name: "ground"
-  aspect: "·"
-  color: BLUE
-  intensity: NORMAL
-  initial_position: null  # Its initial position (or RND). If 'n_instances' > 1, it will be used for the first one only.
-  energy_effect: null  # Effect the tile has on an agent standing on it.
+  name: "ground"  # [string] Descriptive string.
+  aspect: "·"  # [character] A single Unicode character to represent the agent.
+  color: BLUE  # One of these (BLACK, BLUE, CYAN, GREEN, MAGENTA, RED, WHITE, YELLOW).
+  intensity: NORMAL  # Applied to color (NORMAL, BRIGHT).
+  initial_position: null  # Its initial position (random if 'null').
+  energy_effect: null  # Effect on an agent standing on tile.
 
 # BLOCKS definition:
 # This is what blocks will look like:
+# Most settings work like tiles'.
 blocks:
 
-  - # Simple block
-    n_instances: 100
+  - # Simple block. (NOTE the '-' character at line start!!)
+    n_instances: 100  # number of blocks to create
     thing_settings:
       name: "block"
       aspect: "▢"
@@ -58,11 +60,43 @@ blocks:
       initial_position: null
 
 # AGENTS definition:
-# This is the initial population of the world:
+# This is the initial population of the world.
+#
+# Here's how each setting works:
+#
+#   n_instances: 5  # Number of instances to create.
+#
+#   thing_settings:  # Work like tiles' settings.
+#     name: "Omi-II"  # Descriptive string.
+#     aspect: "Ω"  # A single Unicode character to represent the agent.
+#     color: CYAN  # One of these (BLACK, BLUE, CYAN, GREEN, MAGENTA, RED, WHITE, YELLOW).
+#     intensity: BRIGHT  # Applied to color (NORMAL, BRIGHT).
+#     initial_position: null  # Its initial position (random if 'null'). Applied to first instance only if n_instances > 1. 
+#
+#   energy_settings:
+#     initial_energy: 100  # Initial energy assigned at start [>= 0].
+#     maximum_energy: 110  # Maximum energy the agent can acquire [> 0].
+#     bite_power: 5  # Amount of energy the agent can take with one bite [>= 0].
+#     step_cost: -0.1  # Energy consumed on each world step regardless of action chosen [<= 0].
+#     move_cost: -0.1  # Energy consumed for moving to an adjacent tile [<= 0].
+#     recycling_type: NON_RECHARGEABLE # Dynamics ruling its energy losses and 'death' [NON_RECHARGEABLE, RECHARGEABLE, EVERLASTING, RESPAWNABLE].
+#
+#   ai_settings:
+#     perception: full_info  # World -> AI input.
+#         A function in ai.py to extract from the world and the agent itself
+#         all the information an agent will need to make decisions based on its
+#         'action' function.
+#     action: wanderer2  # AI input -> Action.
+#         A function in ai.py (similar to a 'policy' in RL) to select an action at each step
+#         for the agent.
+#     learning: no_learning  # Action, Reward -> New AI.
+#         A function in ai.py that updates the policy of the agent
+#         after trying some action based on experience.
+
 agents:
 
   # With real minds:
-  - # Omi-II
+  - # Omi-II (NOTE the '-' character at line start!!)
     n_instances: 5
     thing_settings:
       name: "Omi-II"
@@ -71,17 +105,17 @@ agents:
       intensity: BRIGHT
       initial_position: null
     energy_settings:
-      initial_energy: 100  # Initial energy assigned at start [>= 0].
-      maximum_energy: 110  # Maximum energy the agent can acquire [> 0].
-      bite_power: 5  # Amount of energy the agent can take with one bite [>= 0].
-      step_cost: -0.1  # Energy consumed on each world step regardless of action chosen [<= 0].
-      move_cost: -0.1  # Energy consumed for moving to an adjacent tile [<= 0].
-      recycling_type: NON_RECHARGEABLE # Dynamics ruling its energy losses and 'death' [NON_RECHARGEABLE, RECHARGEABLE, EVERLASTING, RESPAWNABLE].
+      initial_energy: 100
+      maximum_energy: 110
+      bite_power: 5
+      step_cost: -0.1
+      move_cost: -0.1
+      recycling_type: NON_RECHARGEABLE
     ai_settings:
-      perception: full_info  # World -> AI input.
-      action: wanderer2  # AI input -> Action.
-      learning: no_learning  # Action, Reward -> New AI.
-  - # Omi-I
+      perception: full_info
+      action: wanderer2
+      learning: no_learning
+  - # Omi-I (NOTE the '-' character at line start!!)
     n_instances: 5
     thing_settings:
       name: "Omi-I"
@@ -99,8 +133,8 @@ agents:
     ai_settings:
       perception: full_info
       action: wanderer
-      learning: no_learning # Change to null?
-  - # Bug
+      learning: no_learning
+  - # Bug (NOTE the '-' character at line start!!)
     n_instances: 15
     thing_settings:
       name: "bug"
@@ -118,8 +152,8 @@ agents:
     ai_settings:
       perception: full_info
       action: wanderer
-      learning: no_learning # Change to null?
-  - # Killer
+      learning: no_learning
+  - # Killer (NOTE the '-' character at line start!!)
     n_instances: 2
     thing_settings:
       name: "killer"
@@ -137,8 +171,8 @@ agents:
     ai_settings:
       perception: full_info
       action: killer
-      learning: no_learning # Change to null?
-  - # Foe
+      learning: no_learning
+  - # Foe (NOTE the '-' character at line start!!)
     n_instances: 5
     thing_settings:
       name: "foe"
@@ -156,10 +190,10 @@ agents:
     ai_settings:
       perception: full_info
       action: wanderer
-      learning: no_learning # Change to null?
+      learning: no_learning
   
   # Mindless:
-  - # Energy
+  - # Energy (NOTE the '-' character at line start!!)
     n_instances: 15
     thing_settings:
       name: "energy"
@@ -178,7 +212,7 @@ agents:
       perception: null
       action: null
       learning: null
-  - # Recharger
+  - # Recharger (NOTE the '-' character at line start!!)
     n_instances: 1
     thing_settings:
       name: "recharger"

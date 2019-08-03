@@ -213,3 +213,12 @@ class Agent(Thing):
         self.initialize_state()
 
         return energy_used
+
+    def is_alive(self):
+        # Return a boolean value stating whether the agent:
+        # 1. Has some energy left, and
+        # 2. is able to interact with the world.
+
+        return(
+            self.energy > 0 and self.action is not None
+        )
