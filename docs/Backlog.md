@@ -4,15 +4,14 @@
 
 * ...
 
-## NFR
-
-* Review code to include clip() function (not min(), max()...).
-
 ## Overall features
 
 1.0:
 
-* Provide placeholder ML templates for the basic AI methods.
+* Provide placeholder templates for the basic AI methods.
+  * Perception
+  * Action
+  * Learning
 * Add basic metrics:
   * fps reached at full-speed.
   * Agents' performance (by type, top- / bottom- performers)
@@ -22,9 +21,10 @@
   http://books.agiliq.com/projects/essential-python-tools/en/latest/linters.html
 * Review TODO's and implement or move to backlog.
 * Structure files and docs in repo (see: https://docs.python-guide.org/writing/structure/)
+
 Future:
 
-* Auto-pause the world when all agents are dead?
+* Allow more flexible location of ai functions, now in ai.py  (e.g. config file stating module name).
 * Extract strings with program name, version, etc ("Lil' Grid Lab"...). from code.
 * Add logging (using standard 'logging' module).
 * L10N: Move all strings to ui.py or to yaml file(s).
@@ -111,6 +111,9 @@ Future:
 * Main loop: Decouple UI / AI refresh rates, e.g. one AI step every 5 UI steps.
 * Consider creating "pit" blocks, causing instant death.
 
+## NFR
+
+* ...
 
 #######################################
 # Available Features (add to README.md)
