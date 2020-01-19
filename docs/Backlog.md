@@ -2,7 +2,7 @@
 
 ## Bugs
 
-* ...
+* ... (for now)
 
 ## Overall features
 
