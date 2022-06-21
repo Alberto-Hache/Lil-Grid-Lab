@@ -3,7 +3,7 @@ attrs==19.1.0
 autopep8==1.4.4
 importlib-metadata==0.18
 more-itertools==7.0.0
-numpy==1.16.0
+numpy==1.22.0
 packaging==19.0
 pep8==1.7.1
 pluggy==0.12.0
